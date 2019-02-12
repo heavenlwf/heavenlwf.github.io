@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <title>Python中的generator、Iterator和Iterable | 再见孙悟空</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Python,">
+  
+
+  <meta name="description" content="Python中的generator、Iterator和Iterable可迭代对象(Iterable)在Python中，迭代是通过 for ... in 来完成的。可以直接用于 for 循环的数据类型有：  集合数据类型：list、tuple、dict、set、str等 generator，包括生成器和带 yield 的generator function.  这些可以直接用于 for 循环的对象统">
+<meta name="keywords" content="Python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python中的generator、Iterator和Iterable">
+<meta property="og:url" content="http://liuwenfeng.xyz/2017/05/27/generator-Iterator/index.html">
+<meta property="og:site_name" content="再见孙悟空">
+<meta property="og:description" content="Python中的generator、Iterator和Iterable可迭代对象(Iterable)在Python中，迭代是通过 for ... in 来完成的。可以直接用于 for 循环的数据类型有：  集合数据类型：list、tuple、dict、set、str等 generator，包括生成器和带 yield 的generator function.  这些可以直接用于 for 循环的对象统">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-02-12T08:34:50.768Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python中的generator、Iterator和Iterable">
+<meta name="twitter:description" content="Python中的generator、Iterator和Iterable可迭代对象(Iterable)在Python中，迭代是通过 for ... in 来完成的。可以直接用于 for 循环的数据类型有：  集合数据类型：list、tuple、dict、set、str等 generator，包括生成器和带 yield 的generator function.  这些可以直接用于 for 循环的对象统">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=c114cbeddx" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-38189205-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?57e94d016e201fba3603a8a2b0263af0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+	(function(){
+	    var bp = document.createElement('script');
+	    var curProtocol = window.location.protocol.split(':')[0];
+	    if (curProtocol === 'https') {
+	        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+	    }
+	    else {
+	        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+	    }
+	    var s = document.getElementsByTagName("script")[0];
+	    s.parentNode.insertBefore(bp, s);
+	})();
+  </script>
+
+
+
+  
+
+</head>
+</html>
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">别摸我</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">别摸我</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/archives/" rel="noopener noreferrer" target="_self">
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/category/" rel="noopener noreferrer" target="_self">
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/tag/" rel="noopener noreferrer" target="_self">
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/link/" rel="noopener noreferrer" target="_self">
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/about/" rel="noopener noreferrer" target="_self">
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/atom.xml" rel="noopener noreferrer" target="_blank">
+            RSS
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/search/" rel="noopener noreferrer" target="_self">
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Python中的generator、Iterator和Iterable"><span class="toc-text">Python中的generator、Iterator和Iterable</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#可迭代对象-Iterable"><span class="toc-text">可迭代对象(Iterable)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#生成器-generator"><span class="toc-text">生成器(generator)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#生成器表达式-generator-expression"><span class="toc-text">生成器表达式(generator expression)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#generator-function"><span class="toc-text">generator function</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#迭代器（Iterator）"><span class="toc-text">迭代器（Iterator）</span></a></li></ol></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-generator-Iterator" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">Python中的generator、Iterator和Iterable</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2017.05.27</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>Heaven</span>
+        </span>
+      
+
+      
+
+
+      
+
+      
+      
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <h2 id="Python中的generator、Iterator和Iterable"><a href="#Python中的generator、Iterator和Iterable" class="headerlink" title="Python中的generator、Iterator和Iterable"></a>Python中的generator、Iterator和Iterable</h2><h3 id="可迭代对象-Iterable"><a href="#可迭代对象-Iterable" class="headerlink" title="可迭代对象(Iterable)"></a>可迭代对象(Iterable)</h3><p>在Python中，迭代是通过 <code>for ... in</code> 来完成的。可以直接用于 <code>for</code> 循环的数据类型有：</p>
+<ul>
+<li>集合数据类型：<code>list</code>、<code>tuple</code>、<code>dict</code>、<code>set</code>、<code>str</code>等</li>
+<li><code>generator</code>，包括生成器和带 <code>yield</code> 的generator function.</li>
+</ul>
+<p>这些可以直接用于 <code>for</code> 循环的对象统称为可迭代对象：<code>Iterable</code>。</p>
+<p>可以使用isintance()判断一个对象是否是 <code>Iterable</code> 对象：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> collections <span class="keyword">import</span> Iterable</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>isinstance([], Iterable)</span><br><span class="line"><span class="keyword">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>isinstance(&#123;&#125;, Iterable)</span><br><span class="line"><span class="keyword">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>isinstance(<span class="string">'fuck'</span>, Iterable)</span><br><span class="line"><span class="keyword">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>isinstance((x <span class="keyword">for</span> x <span class="keyword">in</span> range(<span class="number">16</span>) <span class="keyword">if</span> x%<span class="number">2</span> == <span class="number">0</span>)), Iterable)</span><br><span class="line"><span class="keyword">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>isinstance(<span class="number">123</span>, Iterable)</span><br><span class="line"><span class="keyword">False</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="生成器-generator"><a href="#生成器-generator" class="headerlink" title="生成器(generator)"></a>生成器(generator)</h3><h3 id="生成器表达式-generator-expression"><a href="#生成器表达式-generator-expression" class="headerlink" title="生成器表达式(generator expression)"></a>生成器表达式(generator expression)</h3><p>列表解析可以很方便创建一个列表，但是，当创建一个很大的列表而且我们仅仅需要用到前几个元素的时候，不仅会占用很大的内存，而且后面不需要用到的元素占用的空间也都浪费了。</p>
+<p>为此，Python中引入了一种机制；叫作生成器：<code>generator</code><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>l = [x * x <span class="keyword">for</span> x <span class="keyword">in</span> range(<span class="number">4</span>)]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>l</span><br><span class="line">[<span class="number">0</span>, <span class="number">1</span>, <span class="number">4</span>, <span class="number">9</span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>g = (x * x <span class="keyword">for</span> x <span class="keyword">in</span> range(<span class="number">4</span>))</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>g</span><br><span class="line">&lt;generator object &lt;genexpr&gt; at <span class="number">0x7f7dd1a53ba0</span>&gt;</span><br></pre></td></tr></table></figure></p>
+<p>我们把列表解析的[]改成()，就创建了一个 <code>generator</code>。这里，<code>l</code>是一个 <code>list</code>，而 <code>g</code> 是一个<code>generator</code>。</p>
+<p>我们可以直接获取list的每一个元素，但要获取generator的每一个元素，要通过 <code>next()</code> 函数：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>next(g)</span><br><span class="line"><span class="number">0</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>next(g)</span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>next(g)</span><br><span class="line"><span class="number">4</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>next(g)</span><br><span class="line"><span class="number">9</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>next(g)</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File <span class="string">"&lt;stdin&gt;"</span>, line <span class="number">1</span>, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">StopIteration</span><br></pre></td></tr></table></figure></p>
+<p>每次调用 <code>next(g)</code>，就计算出g的下一个元素的值，直到计算到最后一个元素，没有更多的元素时，抛出 <code>StopIteration</code> 的错误。</p>
+<p>当然，实际中我们不可能通过 <code>next()</code> 来一个一个获取里面的元素，而是通过 <code>for</code> 循环，因为<code>generator</code> 也是一个 <code>可迭代对象</code>:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>g = (x * x <span class="keyword">for</span> x <span class="keyword">in</span> range(<span class="number">4</span>))</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">for</span> n <span class="keyword">in</span> g:</span><br><span class="line"><span class="meta">... </span>    print(n)</span><br><span class="line"><span class="meta">... </span></span><br><span class="line"><span class="number">0</span></span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">4</span></span><br><span class="line"><span class="number">9</span></span><br></pre></td></tr></table></figure></p>
+<p>所以，当我们创建一个generator后，基本永远不会用 <code>next()</code>，而是通过 <code>for</code> 循环来迭代它，并且不用关心 <code>StopIteration</code> 错误。</p>
+<h4 id="generator-function"><a href="#generator-function" class="headerlink" title="generator function"></a>generator function</h4><p>来看一个生成斐波那契数列的generator function<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fib</span><span class="params">(num)</span>:</span></span><br><span class="line">    n, a, b = <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span></span><br><span class="line">    <span class="keyword">while</span> n &lt; num:</span><br><span class="line">        <span class="keyword">yield</span> b</span><br><span class="line">        a, b = b, a + b</span><br><span class="line">        n = n + <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">'done'</span></span><br></pre></td></tr></table></figure></p>
+<p>这里的函数包含了一个 <code>yield</code> 关键字，那么这个函数就不是普通函数而是一个generator：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; f = fib(4)</span><br><span class="line">&gt;&gt;&gt; f</span><br><span class="line">&lt;generator object fib at 0x7f7dd04e9570&gt;</span><br></pre></td></tr></table></figure></p>
+<p>使用 <code>for</code> 循环来迭代：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; for n in fib(5):</span><br><span class="line">...     print(n)</span><br><span class="line">...</span><br><span class="line">1</span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">5</span><br></pre></td></tr></table></figure></p>
+<p>但是用 <code>for</code> 循环调用generator时，发现拿不到generator的 <code>return</code> 语句的返回值。如果想要拿到返回值，必须捕获StopIteration错误，返回值包含在 <code>StopIteration</code> 的 <code>value</code> 中：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; g = fib(5)</span><br><span class="line">&gt;&gt;&gt; while True:</span><br><span class="line">...     try:</span><br><span class="line">...         x = next(g)</span><br><span class="line">...         print(&apos;g:&apos;, x)</span><br><span class="line">...     except StopIteration as e:</span><br><span class="line">...         print(&apos;Generator return value:&apos;, e.value)</span><br><span class="line">...         break</span><br><span class="line">...</span><br><span class="line">g: 1</span><br><span class="line">g: 1</span><br><span class="line">g: 2</span><br><span class="line">g: 3</span><br><span class="line">g: 5</span><br><span class="line">Generator return value: done</span><br></pre></td></tr></table></figure></p>
+<h3 id="迭代器（Iterator）"><a href="#迭代器（Iterator）" class="headerlink" title="迭代器（Iterator）"></a>迭代器（Iterator）</h3><p>可以被 <code>next()</code> 函数调用并不断返回下一个值的对象称为迭代器：<code>Iterator</code>。</p>
+<p>可以使用<code>isinstance()</code>判断一个对象是否是 <code>Iterator</code> 对象：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> collections <span class="keyword">import</span> Iterator</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>isinstance((x <span class="keyword">for</span> x <span class="keyword">in</span> range(<span class="number">10</span>)), Iterator)</span><br><span class="line"><span class="keyword">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>isinstance([], Iterator)</span><br><span class="line"><span class="keyword">False</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>isinstance(&#123;&#125;, Iterator)</span><br><span class="line"><span class="keyword">False</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>isinstance(<span class="string">'abc'</span>, Iterator)</span><br><span class="line"><span class="keyword">False</span></span><br></pre></td></tr></table></figure></p>
+<p>==生成器一定是迭代器（反之不成立）==。但 <code>list</code>、<code>dict</code>、<code>str</code>虽然是 <code>Iterable</code>，却不是 <code>Iterator</code>。</p>
+<p>把 <code>list</code>、<code>dict</code>、<code>str</code> 等 <code>Iterable</code> 变成 <code>Iterator</code> 可以使用 <code>iter()</code> 函数：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>isinstance(iter([]), Iterator)</span><br><span class="line"><span class="keyword">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>isinstance(iter(<span class="string">'abc'</span>), Iterator)</span><br><span class="line"><span class="keyword">True</span></span><br></pre></td></tr></table></figure></p>
+<p>任何实现了 <code>__iter__</code> 和 <code>__next__()</code>（python2中实现 <code>next()</code>）方法的对象都是迭代器，<code>__iter__</code> 返回迭代器自身，<code>__next__</code> 返回容器中的下一个值，如果容器中没有更多元素了，则抛出 <code>StopIteration</code> 异常，至于它们到底是如何实现的这并不重要。</p>
+<p>为了更直观地感受迭代器内部的执行过程，我们自定义一个迭代器，以斐波那契数列为例：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Fib</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, number)</span>:</span></span><br><span class="line">        self.prev = <span class="number">0</span></span><br><span class="line">        self.curr = <span class="number">1</span></span><br><span class="line">        self.number = number</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__iter__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__next__</span><span class="params">(self)</span>:</span></span><br><span class="line">        value = self.curr</span><br><span class="line">        <span class="keyword">if</span> self.number &lt;= <span class="number">0</span>:</span><br><span class="line">            <span class="keyword">raise</span> StopIteration</span><br><span class="line">        self.curr += self.prev</span><br><span class="line">        self.prev = value</span><br><span class="line">        self.number -= <span class="number">1</span></span><br><span class="line">        <span class="keyword">return</span> value</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">for</span> i <span class="keyword">in</span> Fib(<span class="number">6</span>):</span><br><span class="line"><span class="meta">... </span>    print(i)</span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">2</span></span><br><span class="line"><span class="number">3</span></span><br><span class="line"><span class="number">5</span></span><br><span class="line"><span class="number">8</span></span><br></pre></td></tr></table></figure></p>
+<p>Fib既是一个可迭代对象（因为它实现了 <code>__iter__</code> 方法），又是一个迭代器（因为实现了 <code>__next__</code> 方法）。实例变量 <code>prev</code> 和 <code>curr</code> 用户维护迭代器内部的状态。每次调用 <code>next()</code> 方法的时候做两件事：</p>
+<p><ol></ol></p>
+<p><li>为下一次调用<code>next()</code>方法修改状态</li></p>
+<p><li>为当前这次调用生成返回结果</li><br><br>迭代器就像一个懒加载的工厂，等到有人需要的时候才给它生成值返回，没调用的时候就处于休眠状态等待下一次调用。</p>
+
+    
+  </div>
+
+</article>
+
+
+   
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持heaven</div>
+        <ul>
+        
+          <li class="item">
+            
+              <span>微信扫一扫</span>
+            
+            <img src="/images/qr-wechat.png" alt="">
+          </li>
+        
+          <li class="item">
+            
+              <span>支付宝扫一扫</span>
+            
+            <img src="/images/qr-alipay.png" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+   
+  <div class="box-prev-next clearfix">
+    <a class="show pull-left" href="/2017/05/18/call-parent-class-method/">
+        <i class="icon icon-angle-left"></i>
+    </a>
+    <a class="show pull-right" href="/2017/07/01/interview-think/">
+        <i class="icon icon-angle-right"></i>
+    </a>
+  </div>
+
+
+
+
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/archives/" rel="noopener noreferrer" target="_self">
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/category/" rel="noopener noreferrer" target="_self">
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/tag/" rel="noopener noreferrer" target="_self">
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/link/" rel="noopener noreferrer" target="_self">
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/about/" rel="noopener noreferrer" target="_self">
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/atom.xml" rel="noopener noreferrer" target="_blank">
+              RSS
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/search/" rel="noopener noreferrer" target="_self">
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+
+    
+    
+
+    
+
+    
+    
+
+    
+
+<!-- Gitalk评论插件通用代码 -->
+<div id="gitalk-container"></div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+const gitalk = new Gitalk({
+  clientID: 'cab418d306ae6c85ac30',
+  clientSecret: '2111e7a88a575cde79c83e64b7e27dd8a333146f',
+  repo: 'blog-comment',
+  owner: 'heavenlwf',
+  // 在这里设置一下截取前50个字符串, 这是因为 github 对 label 的长度有了要求, 如果超过
+  // 50个字符串则会报错.
+  // id: location.pathname.split('/').pop().substring(0, 49),
+  id: location.pathname,
+  admin: ['heavenlwf'],
+  // facebook-like distraction free mode
+  distractionFreeMode: false
+})
+gitalk.render('gitalk-container')
+</script>
+<!-- Gitalk代码结束 -->
+
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <title>Django源码分析(三)--HTTP请求到响应过程分析 | 再见孙悟空</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Python,Django,">
+  
+
+  <meta name="description" content="Django源码分析(四) – HTTP请求过程所有 Web 框架都是一样, 处理 http 请求: 接收 request, 返回 response。 前面我们介绍了:   加载project settings  创建WSGIServer  不管是 runserver 方式还是 uWSGI 启动 Django 项目, 在启动时都会调用 django.core.servers.basehttp 中的">
+<meta name="keywords" content="Python,Django">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Django源码分析(三)--HTTP请求到响应过程分析">
+<meta property="og:url" content="http://liuwenfeng.xyz/2018/04/03/django-request-response/index.html">
+<meta property="og:site_name" content="再见孙悟空">
+<meta property="og:description" content="Django源码分析(四) – HTTP请求过程所有 Web 框架都是一样, 处理 http 请求: 接收 request, 返回 response。 前面我们介绍了:   加载project settings  创建WSGIServer  不管是 runserver 方式还是 uWSGI 启动 Django 项目, 在启动时都会调用 django.core.servers.basehttp 中的">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-02-12T08:34:27.854Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Django源码分析(三)--HTTP请求到响应过程分析">
+<meta name="twitter:description" content="Django源码分析(四) – HTTP请求过程所有 Web 框架都是一样, 处理 http 请求: 接收 request, 返回 response。 前面我们介绍了:   加载project settings  创建WSGIServer  不管是 runserver 方式还是 uWSGI 启动 Django 项目, 在启动时都会调用 django.core.servers.basehttp 中的">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=c114cbeddx" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-38189205-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?57e94d016e201fba3603a8a2b0263af0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+	(function(){
+	    var bp = document.createElement('script');
+	    var curProtocol = window.location.protocol.split(':')[0];
+	    if (curProtocol === 'https') {
+	        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+	    }
+	    else {
+	        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+	    }
+	    var s = document.getElementsByTagName("script")[0];
+	    s.parentNode.insertBefore(bp, s);
+	})();
+  </script>
+
+
+
+  
+
+</head>
+</html>
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">别摸我</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">别摸我</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/archives/" rel="noopener noreferrer" target="_self">
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/category/" rel="noopener noreferrer" target="_self">
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/tag/" rel="noopener noreferrer" target="_self">
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/link/" rel="noopener noreferrer" target="_self">
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/about/" rel="noopener noreferrer" target="_self">
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/atom.xml" rel="noopener noreferrer" target="_blank">
+            RSS
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/search/" rel="noopener noreferrer" target="_self">
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Django源码分析-四-–-HTTP请求过程"><span class="toc-text">Django源码分析(四) – HTTP请求过程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1、再来看-run-方法"><span class="toc-text">1、再来看 run() 方法</span></a></li></ol></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-django-request-response" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">Django源码分析(三)--HTTP请求到响应过程分析</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2018.04.03</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>Heaven</span>
+        </span>
+      
+
+      
+  <span class="article-category">
+    <i class="icon-list"></i>
+    <a class="article-category-link" href="/categories/Python-Django/">Python,Django</a>
+  </span>
+
+
+
+      
+
+      
+      
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <h1 id="Django源码分析-四-–-HTTP请求过程"><a href="#Django源码分析-四-–-HTTP请求过程" class="headerlink" title="Django源码分析(四) – HTTP请求过程"></a>Django源码分析(四) – HTTP请求过程</h1><p>所有 <code>Web</code> 框架都是一样, 处理 <code>http</code> 请求: 接收 <code>request</code>, 返回 <code>response</code>。</p>
+<p><a href="https://heavenlwf.github.io/2018/03/28/django-runserver-process/" target="_blank" rel="noopener">前面</a>我们介绍了:</p>
+<ul>
+<li style="list-style: none"><input type="checkbox" checked> 加载project settings</li>
+<li style="list-style: none"><input type="checkbox" checked> 创建WSGIServer</li>
+</ul>
+<p>不管是 <code>runserver</code> 方式还是 <code>uWSGI</code> 启动 <code>Django</code> 项目, 在启动时都会调用 <code>django.core.servers.basehttp</code> 中的 <code>run()</code> 方法, 创建一个 <code>django.core.servers.WSGIServer</code> 的实例, 之后调用 <code>server_forever()</code> 方法启动HTTP服务, 一直处理请求到服务被关闭。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># socketserver.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BaseServer</span>:</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">serve_forever</span><span class="params">(self, poll_interval=<span class="number">0.5</span>)</span>:</span></span><br><span class="line">        self.__is_shut_down.clear()</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="keyword">with</span> _ServerSelector() <span class="keyword">as</span> selector:</span><br><span class="line">                selector.register(self, selectors.EVENT_READ)</span><br><span class="line"></span><br><span class="line">                <span class="keyword">while</span> <span class="keyword">not</span> self.__shutdown_request:</span><br><span class="line">                    ready = selector.select(poll_interval)</span><br><span class="line">                    <span class="keyword">if</span> ready:</span><br><span class="line">                        self._handle_request_noblock()</span><br><span class="line"></span><br><span class="line">                    self.service_actions()</span><br><span class="line">        <span class="keyword">finally</span>:</span><br><span class="line">            self.__shutdown_request = <span class="keyword">False</span></span><br><span class="line">            self.__is_shut_down.set()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_handle_request_noblock</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            request, client_address = self.get_request()</span><br><span class="line">        <span class="keyword">except</span> OSError:</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        <span class="keyword">if</span> self.verify_request(request, client_address):</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                self.process_request(request, client_address)</span><br><span class="line">            <span class="keyword">except</span> Exception:</span><br><span class="line">                self.handle_error(request, client_address)</span><br><span class="line">                self.shutdown_request(request)</span><br><span class="line">            <span class="keyword">except</span>:</span><br><span class="line">                self.shutdown_request(request)</span><br><span class="line">                <span class="keyword">raise</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            self.shutdown_request(request)</span><br></pre></td></tr></table></figure></p>
+<p>从源码中可以看到, <code>while</code> 循环一直调用 <code>_handle_request_noblock</code> 方法去处理请求。 <code>_handle_request_noblock</code> 方法处理请求要经过四个过程: <code>get_request、verify_request、process_request、shutdown_request</code>。</p>
+<h2 id="1、再来看-run-方法"><a href="#1、再来看-run-方法" class="headerlink" title="1、再来看 run() 方法"></a>1、再来看 <code>run()</code> 方法</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># django\core\servers\basehttp.py</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">(addr, port, wsgi_handler, ipv6=False, threading=False, server_cls=WSGIServer)</span>:</span></span><br><span class="line">    server_address = (addr, port)</span><br><span class="line">    <span class="keyword">if</span> threading:</span><br><span class="line">        httpd_cls = type(<span class="string">'WSGIServer'</span>, (socketserver.ThreadingMixIn, server_cls), &#123;&#125;)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        httpd_cls = server_cls</span><br><span class="line">    httpd = httpd_cls(server_address, WSGIRequestHandler, ipv6=ipv6)</span><br><span class="line">    <span class="keyword">if</span> threading:</span><br><span class="line">        httpd.daemon_threads = <span class="keyword">True</span></span><br><span class="line">    httpd.set_app(wsgi_handler)</span><br><span class="line">    httpd.serve_forever()</span><br></pre></td></tr></table></figure>
+<p>可以看到创建 <code>WSGIServer</code> 实例时传进 <code>WSGIRequestHandler</code> 参数, 然后 <code>set_app</code> 方法设置一个可调用的对象作为 <code>application</code>, 请求最终将由这个 <code>application</code> 对象处理并返回 <code>response</code>。</p>
+<p>当收到 <code>HTTP</code> 请求时, <code>WSGIServer</code> 会为每一个请求实例化一个 <code>WSGIRequestHandler</code> 对象, 而 <code>WSGIRequestHandler类</code> 继承自 <code>BaseRequestHandler</code>:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BaseRequestHandler</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, request, client_address, server)</span>:</span></span><br><span class="line">        self.request = request</span><br><span class="line">        self.client_address = client_address</span><br><span class="line">        self.server = server</span><br><span class="line">        self.setup()</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            self.handle()</span><br><span class="line">        <span class="keyword">finally</span>:</span><br><span class="line">            self.finish()</span><br></pre></td></tr></table></figure></p>
+<p>可以看到, 实际是用 <code>WSGIRequestHandler</code> 的 <code>handle()</code> 方法来处理请求(其实最终是使用 <code>wsgiref.handlers.BaseHandler</code> 中的 <code>run</code> 方法处理), 来看看 <code>handle()</code> 里做的处理:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">WSGIRequestHandler</span><span class="params">(simple_server.WSGIRequestHandler)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">handle</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.raw_requestline = self.rfile.readline(<span class="number">65537</span>)</span><br><span class="line">        <span class="keyword">if</span> len(self.raw_requestline) &gt; <span class="number">65536</span>:</span><br><span class="line">            self.requestline = <span class="string">''</span></span><br><span class="line">            self.request_version = <span class="string">''</span></span><br><span class="line">            self.command = <span class="string">''</span></span><br><span class="line">            self.send_error(<span class="number">414</span>)</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> self.parse_request():  <span class="comment"># An error code has been sent, just exit</span></span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">        handler = ServerHandler(</span><br><span class="line">            self.rfile, self.wfile, self.get_stderr(), self.get_environ()</span><br><span class="line">        )</span><br><span class="line">        handler.request_handler = self      <span class="comment"># backpointer for logging</span></span><br><span class="line">        handler.run(self.server.get_app())</span><br></pre></td></tr></table></figure></p>
+<p><code>handler</code> 实例化了一个 <code>ServerHandler</code>对象, 并把之前设置的 <code>application</code> 作为参数传入它的 <code>run</code> 方法中:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BaseHandler</span>:</span>      <span class="comment"># WSGIRequestHandler 继承于 BaseHandler</span></span><br><span class="line">        <span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">(self, application)</span>:</span></span><br><span class="line">        <span class="string">"""Invoke the application"""</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            self.setup_environ()</span><br><span class="line">            self.result = application(self.environ, self.start_response)</span><br><span class="line">            self.finish_response()</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                self.handle_error()</span><br><span class="line">            <span class="keyword">except</span>:</span><br><span class="line">                <span class="comment"># If we get an error handling an error, just give up already!</span></span><br><span class="line">                self.close()</span><br><span class="line">                <span class="keyword">raise</span>   <span class="comment"># ...and let the actual server figure it out.</span></span><br></pre></td></tr></table></figure></p>
+<p>这里就调用了<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">## 2、处理```Request</span><br></pre></td></tr></table></figure></p>
+<p>前面说到的 <code>application</code> , 在 <code>Django</code> 中一般是 <code>django.core.handlers.wsgi.WSGIHandler</code> 对象， <code>WSGIHandler</code> 继承自 <code>django.core.handlers.base.BaseHandler</code> ,<br>这是 <code>Django</code> 处理 <code>Request</code> 的核心， 它会创建一个 <code>WSGIRequest</code> 实例， 而 <code>WSGIRequest</code> 是 <code>http.HttpRequest</code> 继承而来。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># django\core\handlers\wsgi.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">WSGIHandler</span><span class="params">(base.BaseHandler)</span>:</span></span><br><span class="line">    request_class = WSGIRequest</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, *args, **kwargs)</span>:</span></span><br><span class="line">        super().__init__(*args, **kwargs)</span><br><span class="line">        self.load_middleware()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(self, environ, start_response)</span>:</span></span><br><span class="line">        set_script_prefix(get_script_name(environ))</span><br><span class="line">        signals.request_started.send(sender=self.__class__, environ=environ)</span><br><span class="line">        request = self.request_class(environ)</span><br><span class="line">        response = self.get_response(request)</span><br><span class="line"></span><br><span class="line">        response._handler_class = self.__class__</span><br><span class="line"></span><br><span class="line">        status = <span class="string">'%d %s'</span> % (response.status_code, response.reason_phrase)</span><br><span class="line">        response_headers = list(response.items())</span><br><span class="line">        <span class="keyword">for</span> c <span class="keyword">in</span> response.cookies.values():</span><br><span class="line">            response_headers.append((<span class="string">'Set-Cookie'</span>, c.output(header=<span class="string">''</span>)))</span><br><span class="line">        start_response(status, response_headers)</span><br><span class="line">        <span class="keyword">if</span> getattr(response, <span class="string">'file_to_stream'</span>, <span class="keyword">None</span>) <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span> <span class="keyword">and</span> environ.get(<span class="string">'wsgi.file_wrapper'</span>):</span><br><span class="line">            response = environ[<span class="string">'wsgi.file_wrapper'</span>](response.file_to_stream)</span><br><span class="line">        <span class="keyword">return</span> response</span><br></pre></td></tr></table></figure></p>
+
+    
+  </div>
+
+</article>
+
+
+   
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持heaven</div>
+        <ul>
+        
+          <li class="item">
+            
+              <span>微信扫一扫</span>
+            
+            <img src="/images/qr-wechat.png" alt="">
+          </li>
+        
+          <li class="item">
+            
+              <span>支付宝扫一扫</span>
+            
+            <img src="/images/qr-alipay.png" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+   
+  <div class="box-prev-next clearfix">
+    <a class="show pull-left" href="/2018/03/28/django-middleware/">
+        <i class="icon icon-angle-left"></i>
+    </a>
+    <a class="show pull-right" href="/2019/01/27/python-classmethod-closure/">
+        <i class="icon icon-angle-right"></i>
+    </a>
+  </div>
+
+
+
+
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/archives/" rel="noopener noreferrer" target="_self">
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/category/" rel="noopener noreferrer" target="_self">
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/tag/" rel="noopener noreferrer" target="_self">
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/link/" rel="noopener noreferrer" target="_self">
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/about/" rel="noopener noreferrer" target="_self">
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/atom.xml" rel="noopener noreferrer" target="_blank">
+              RSS
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/search/" rel="noopener noreferrer" target="_self">
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+
+    
+    
+
+    
+
+    
+    
+
+    
+
+<!-- Gitalk评论插件通用代码 -->
+<div id="gitalk-container"></div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+const gitalk = new Gitalk({
+  clientID: 'cab418d306ae6c85ac30',
+  clientSecret: '2111e7a88a575cde79c83e64b7e27dd8a333146f',
+  repo: 'blog-comment',
+  owner: 'heavenlwf',
+  // 在这里设置一下截取前50个字符串, 这是因为 github 对 label 的长度有了要求, 如果超过
+  // 50个字符串则会报错.
+  // id: location.pathname.split('/').pop().substring(0, 49),
+  id: location.pathname,
+  admin: ['heavenlwf'],
+  // facebook-like distraction free mode
+  distractionFreeMode: false
+})
+gitalk.render('gitalk-container')
+</script>
+<!-- Gitalk代码结束 -->
+
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <title>Django源码分析(二)--middleware | 再见孙悟空</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Python,Django,">
+  
+
+  <meta name="description" content="Django源码分析(二)–中间件接上回, Django启动时会创建一个WSGIHandler实例12345678910111213141516171819202122232425262728293031323334353637# django\core\handlers\wsgi.pyclass WSGIHandler(base.BaseHandler):    request_class =">
+<meta name="keywords" content="Python,Django">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Django源码分析(二)--middleware">
+<meta property="og:url" content="http://liuwenfeng.xyz/2018/03/28/django-middleware/index.html">
+<meta property="og:site_name" content="再见孙悟空">
+<meta property="og:description" content="Django源码分析(二)–中间件接上回, Django启动时会创建一个WSGIHandler实例12345678910111213141516171819202122232425262728293031323334353637# django\core\handlers\wsgi.pyclass WSGIHandler(base.BaseHandler):    request_class =">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://heavenlwf.github.io/images/django-middleware.png">
+<meta property="og:updated_time" content="2019-02-12T08:33:51.317Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Django源码分析(二)--middleware">
+<meta name="twitter:description" content="Django源码分析(二)–中间件接上回, Django启动时会创建一个WSGIHandler实例12345678910111213141516171819202122232425262728293031323334353637# django\core\handlers\wsgi.pyclass WSGIHandler(base.BaseHandler):    request_class =">
+<meta name="twitter:image" content="https://heavenlwf.github.io/images/django-middleware.png">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=c114cbeddx" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-38189205-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?57e94d016e201fba3603a8a2b0263af0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+	(function(){
+	    var bp = document.createElement('script');
+	    var curProtocol = window.location.protocol.split(':')[0];
+	    if (curProtocol === 'https') {
+	        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+	    }
+	    else {
+	        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+	    }
+	    var s = document.getElementsByTagName("script")[0];
+	    s.parentNode.insertBefore(bp, s);
+	})();
+  </script>
+
+
+
+  
+
+</head>
+</html>
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">别摸我</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">别摸我</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/archives/" rel="noopener noreferrer" target="_self">
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/category/" rel="noopener noreferrer" target="_self">
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/tag/" rel="noopener noreferrer" target="_self">
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/link/" rel="noopener noreferrer" target="_self">
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/about/" rel="noopener noreferrer" target="_self">
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/atom.xml" rel="noopener noreferrer" target="_blank">
+            RSS
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/search/" rel="noopener noreferrer" target="_self">
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Django源码分析-二-–中间件"><span class="toc-text">Django源码分析(二)–中间件</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#中间件的顺序和层次"><span class="toc-text">中间件的顺序和层次</span></a></li></ol></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-django-middleware" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">Django源码分析(二)--middleware</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2018.03.28</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>Heaven</span>
+        </span>
+      
+
+      
+  <span class="article-category">
+    <i class="icon-list"></i>
+    <a class="article-category-link" href="/categories/Python-Django/">Python, Django</a>
+  </span>
+
+
+
+      
+
+      
+      
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <h1 id="Django源码分析-二-–中间件"><a href="#Django源码分析-二-–中间件" class="headerlink" title="Django源码分析(二)–中间件"></a>Django源码分析(二)–中间件</h1><p>接上回, <code>Django</code>启动时会创建一个<code>WSGIHandler</code>实例<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># django\core\handlers\wsgi.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">WSGIHandler</span><span class="params">(base.BaseHandler)</span>:</span></span><br><span class="line">    request_class = WSGIRequest</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, *args, **kwargs)</span>:</span></span><br><span class="line">        super(WSGIHandler, self).__init__(*args, **kwargs)</span><br><span class="line">        self.load_middleware()</span><br><span class="line"></span><br><span class="line"><span class="comment"># django\core\handlers\base.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BaseHandler</span><span class="params">(object)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="comment"># 初始化 Django 的中间件</span></span><br><span class="line">        self._request_middleware = <span class="keyword">None</span></span><br><span class="line">        self._view_middleware = <span class="keyword">None</span></span><br><span class="line">        self._template_response_middleware = <span class="keyword">None</span></span><br><span class="line">        self._response_middleware = <span class="keyword">None</span></span><br><span class="line">        self._exception_middleware = <span class="keyword">None</span></span><br><span class="line">        self._middleware_chain = <span class="keyword">None</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">load_middleware</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        Populate middleware lists from settings.MIDDLEWARE (or the deprecated</span></span><br><span class="line"><span class="string">        MIDDLEWARE_CLASSES).</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        Must be called after the environment is fixed (see __call__ in subclasses).</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        self._request_middleware = []</span><br><span class="line">        self._view_middleware = []</span><br><span class="line">        self._template_response_middleware = []</span><br><span class="line">        self._response_middleware = []</span><br><span class="line">        self._exception_middleware = []</span><br><span class="line">        handler = convert_exception_to_response(self._get_response)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 根据settings.MIDDLEWARE中的列表，加载中间件</span></span><br><span class="line">        <span class="keyword">for</span> middleware_path <span class="keyword">in</span> reversed(settings.MIDDLEWARE):</span><br><span class="line">            ...</span><br></pre></td></tr></table></figure></p>
+<p>可以看到, <code>load_middleware</code> 会去加载 <code>settings</code> 中的 <code>MIDDLEWARE</code>, 就是下面这个列表:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">MIDDLEWARE = [</span><br><span class="line">    <span class="string">'django.middleware.security.SecurityMiddleware'</span>,</span><br><span class="line">    <span class="string">'django.contrib.sessions.middleware.SessionMiddleware'</span>,</span><br><span class="line">    <span class="string">'django.middleware.common.CommonMiddleware'</span>,</span><br><span class="line">    <span class="string">'django.middleware.csrf.CsrfViewMiddleware'</span>,</span><br><span class="line">    <span class="string">'django.contrib.auth.middleware.AuthenticationMiddleware'</span>,</span><br><span class="line">    <span class="string">'django.contrib.messages.middleware.MessageMiddleware'</span>,</span><br><span class="line">    <span class="string">'django.middleware.clickjacking.XFrameOptionsMiddleware'</span>,</span><br><span class="line">]</span><br></pre></td></tr></table></figure></p>
+<p>然后遍历里面的元素, 然后根据里面实现的方法把它们加到对应的 <code>list</code>中:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> hasattr(mw_instance, <span class="string">'process_view'</span>):</span><br><span class="line">        self._view_middleware.insert(<span class="number">0</span>, mw_instance.process_view)</span><br><span class="line">    <span class="keyword">if</span> hasattr(mw_instance, <span class="string">'process_template_response'</span>):</span><br><span class="line">        self._template_response_middleware.append(mw_instance.process_template_response)</span><br><span class="line">    <span class="keyword">if</span> hasattr(mw_instance, <span class="string">'process_exception'</span>):</span><br><span class="line">        self._exception_middleware.append(mw_instance.process_exception)</span><br><span class="line"></span><br><span class="line">handler = convert_exception_to_response(mw_instance)</span><br></pre></td></tr></table></figure></p>
+<p>当接收到 <code>request</code> 时, 不同的阶段就会调用对应的方法。</p>
+<p>来看一下所谓的 <code>middleware</code> 到底是什么:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># django\middleware\common.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CommonMiddleware</span><span class="params">(MiddlewareMixin)</span>:</span></span><br><span class="line">    response_redirect_class = http.HttpResponsePermanentRedirect</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">process_request</span><span class="params">(self, request)</span>:</span></span><br><span class="line">        ...</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">process_response</span><span class="params">(self, request, response)</span>:</span></span><br><span class="line">        ...</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># django\utils\deprecation.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MiddlewareMixin</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, get_response=None)</span>:</span></span><br><span class="line">        self.get_response = get_response</span><br><span class="line">        super(MiddlewareMixin, self).__init__()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(self, request)</span>:</span></span><br><span class="line">        response = <span class="keyword">None</span></span><br><span class="line">        <span class="keyword">if</span> hasattr(self, <span class="string">'process_request'</span>):</span><br><span class="line">            response = self.process_request(request)</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> response:</span><br><span class="line">            response = self.get_response(request)</span><br><span class="line">        <span class="keyword">if</span> hasattr(self, <span class="string">'process_response'</span>):</span><br><span class="line">            response = self.process_response(request, response)</span><br><span class="line">        <span class="keyword">return</span> response</span><br></pre></td></tr></table></figure></p>
+<h2 id="中间件的顺序和层次"><a href="#中间件的顺序和层次" class="headerlink" title="中间件的顺序和层次"></a>中间件的顺序和层次</h2><p>在请求(<code>request</code>)阶段，调用视图之前，<code>Django</code> 会按照 <code>MIDDLEWARE</code> 中定义的顺序自顶向下应用中间件。会用到两个钩子。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">process_request()</span><br><span class="line"></span><br><span class="line">process_view()</span><br></pre></td></tr></table></figure></p>
+<p>在响应( <code>response</code>)阶段，调用视图之后，中间件会按照相反的顺序应用，自底向上。会用到三个钩子：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">process_excpetion()</span><br><span class="line"></span><br><span class="line">process_template_response()</span><br><span class="line"></span><br><span class="line">process_response()</span><br></pre></td></tr></table></figure></p>
+<p><img src="https://heavenlwf.github.io/images/django-middleware.png" alt=""><br>你可以把它想象成一颗洋葱：每个中间件都是包裹视图的一层’皮’，而视图就是洋葱心。如果 <code>request</code> 通过洋葱的各层(每层通过调用 <code>get_response</code> 传递 <code>request</code> 到下一层)，传向中心的视图，<code>response</code> 会原路返回穿过各层。</p>
+<p>如果某一次决定短路直接返回 <code>response</code> (不再调用 <code>get_response</code> )，余下的各层和视图将不会见到任何  <code>request</code> 和 <code>response</code>。</p>
+
+    
+  </div>
+
+</article>
+
+
+   
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持heaven</div>
+        <ul>
+        
+          <li class="item">
+            
+              <span>微信扫一扫</span>
+            
+            <img src="/images/qr-wechat.png" alt="">
+          </li>
+        
+          <li class="item">
+            
+              <span>支付宝扫一扫</span>
+            
+            <img src="/images/qr-alipay.png" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+   
+  <div class="box-prev-next clearfix">
+    <a class="show pull-left" href="/2018/03/28/django-runserver-process/">
+        <i class="icon icon-angle-left"></i>
+    </a>
+    <a class="show pull-right" href="/2018/04/03/django-request-response/">
+        <i class="icon icon-angle-right"></i>
+    </a>
+  </div>
+
+
+
+
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/archives/" rel="noopener noreferrer" target="_self">
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/category/" rel="noopener noreferrer" target="_self">
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/tag/" rel="noopener noreferrer" target="_self">
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/link/" rel="noopener noreferrer" target="_self">
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/about/" rel="noopener noreferrer" target="_self">
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/atom.xml" rel="noopener noreferrer" target="_blank">
+              RSS
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/search/" rel="noopener noreferrer" target="_self">
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+
+    
+    
+
+    
+
+    
+    
+
+    
+
+<!-- Gitalk评论插件通用代码 -->
+<div id="gitalk-container"></div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+const gitalk = new Gitalk({
+  clientID: 'cab418d306ae6c85ac30',
+  clientSecret: '2111e7a88a575cde79c83e64b7e27dd8a333146f',
+  repo: 'blog-comment',
+  owner: 'heavenlwf',
+  // 在这里设置一下截取前50个字符串, 这是因为 github 对 label 的长度有了要求, 如果超过
+  // 50个字符串则会报错.
+  // id: location.pathname.split('/').pop().substring(0, 49),
+  id: location.pathname,
+  admin: ['heavenlwf'],
+  // facebook-like distraction free mode
+  distractionFreeMode: false
+})
+gitalk.render('gitalk-container')
+</script>
+<!-- Gitalk代码结束 -->
+
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>
