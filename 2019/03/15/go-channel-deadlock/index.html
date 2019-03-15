@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-blog">
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <title>go-channel-deadlock | 再见孙悟空</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="go,">
+  
+
+  <meta name="description" content="go 中的 channel 和 goroutine 使用时发生的 deadlock 问题代码: 12345678910111213141516171819202122232425262728// test.gopackage mainimport (	&quot;fmt&quot;	&quot;sync&quot;)func main() &amp;#123;    var wg sync.WaitGroup    array := []int">
+<meta name="keywords" content="go">
+<meta property="og:type" content="article">
+<meta property="og:title" content="go-channel-deadlock">
+<meta property="og:url" content="http://liuwenfeng.xyz/2019/03/15/go-channel-deadlock/index.html">
+<meta property="og:site_name" content="再见孙悟空">
+<meta property="og:description" content="go 中的 channel 和 goroutine 使用时发生的 deadlock 问题代码: 12345678910111213141516171819202122232425262728// test.gopackage mainimport (	&quot;fmt&quot;	&quot;sync&quot;)func main() &amp;#123;    var wg sync.WaitGroup    array := []int">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-03-15T07:44:28.533Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="go-channel-deadlock">
+<meta name="twitter:description" content="go 中的 channel 和 goroutine 使用时发生的 deadlock 问题代码: 12345678910111213141516171819202122232425262728// test.gopackage mainimport (	&quot;fmt&quot;	&quot;sync&quot;)func main() &amp;#123;    var wg sync.WaitGroup    array := []int">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=c114cbeddx" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-38189205-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?57e94d016e201fba3603a8a2b0263af0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+	(function(){
+	    var bp = document.createElement('script');
+	    var curProtocol = window.location.protocol.split(':')[0];
+	    if (curProtocol === 'https') {
+	        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+	    }
+	    else {
+	        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+	    }
+	    var s = document.getElementsByTagName("script")[0];
+	    s.parentNode.insertBefore(bp, s);
+	})();
+  </script>
+
+
+
+  
+
+</head>
+</html>
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">别摸我</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">别摸我</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/archives/" rel="noopener noreferrer" target="_self">
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/category/" rel="noopener noreferrer" target="_self">
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/tag/" rel="noopener noreferrer" target="_self">
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/link/" rel="noopener noreferrer" target="_self">
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/about/" rel="noopener noreferrer" target="_self">
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/atom.xml" rel="noopener noreferrer" target="_blank">
+            RSS
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a class="CIRCLE" href="/search/" rel="noopener noreferrer" target="_self">
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#go-中的-channel-和-goroutine-使用时发生的-deadlock-问题"><span class="toc-text">go 中的 channel 和 goroutine 使用时发生的 deadlock 问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#解决方案"><span class="toc-text">解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1、使用非阻塞-带缓存-的-Channels"><span class="toc-text">1、使用非阻塞(带缓存)的 Channels</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-不阻塞-main-goroutine"><span class="toc-text">2. 不阻塞 main goroutine</span></a></li></ol></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="blog-go-channel-deadlock" class="article article-type-blog" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">go-channel-deadlock</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2019.03.15</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>Heaven</span>
+        </span>
+      
+
+      
+
+
+      
+
+      
+      
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <h4 id="go-中的-channel-和-goroutine-使用时发生的-deadlock-问题"><a href="#go-中的-channel-和-goroutine-使用时发生的-deadlock-问题" class="headerlink" title="go 中的 channel 和 goroutine 使用时发生的 deadlock 问题"></a>go 中的 channel 和 goroutine 使用时发生的 deadlock 问题</h4><p>代码:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// test.go</span></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"sync"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">    array := []<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;</span><br><span class="line">    nums := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> _, a := <span class="keyword">range</span> array &#123;</span><br><span class="line">        wg.Add(<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(a <span class="keyword">int</span>)</span></span>&#123;</span><br><span class="line">            <span class="keyword">defer</span> wg.Done()</span><br><span class="line">            nums &lt;- a</span><br><span class="line">        &#125;(a)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    wg.Wait()</span><br><span class="line">    <span class="built_in">close</span>(nums)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> num := <span class="keyword">range</span> nums &#123;</span><br><span class="line">        fmt.Println(num)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>执行:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ go run test.go</span><br><span class="line">fatal error: all goroutines are asleep - deadlock!</span><br><span class="line"></span><br><span class="line">goroutine 1 [semacquire]:</span><br><span class="line">sync.runtime_Semacquire(0xc42008601c)</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>发生了死锁, 所有的 <code>goroutines</code> 都被阻塞了。</p>
+<p>在11行, 我们初始化了一个不带缓存的 <code>Channels</code> , 在创建的子 <code>goroutine</code> 中, 我们向这个 <code>Channels</code> 执行了一个发送的操作。<strong>这个发送操作会导致发送者的 <code>goroutine</code> 阻塞, 直到另一个 <code>goroutine</code> 在相同的 <code>Channels</code> 中执行接收操作。</strong></p>
+<p>在 <code>main goroutine</code> 中的最后, <code>range</code> 从 <code>Channels</code> 中接收数据, 但由于前面的 <code>goroutine</code> 都被阻塞了, 所以 <code>goroutine</code> 中的计数器 <code>wg</code> 并没有执行 <code>Done()</code> 操作, 所以在前面的 <code>wg.Wait()</code> 被阻塞了,  导致 <code>main goroutine</code> 也被阻塞了, 也就导致了 <code>deadlock</code> 的发生。</p>
+<h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><h5 id="1、使用非阻塞-带缓存-的-Channels"><a href="#1、使用非阻塞-带缓存-的-Channels" class="headerlink" title="1、使用非阻塞(带缓存)的 Channels"></a>1、使用非阻塞(带缓存)的 <code>Channels</code></h5><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"sync"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">    array := []<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;</span><br><span class="line">    nums := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>, <span class="built_in">len</span>(array))</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> _, a := <span class="keyword">range</span> array &#123;</span><br><span class="line">        wg.Add(<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(a <span class="keyword">int</span>)</span></span>&#123;</span><br><span class="line">            <span class="keyword">defer</span> wg.Done()</span><br><span class="line">            nums &lt;- a</span><br><span class="line">        &#125;(a)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    wg.Wait()</span><br><span class="line">    <span class="built_in">close</span>(nums)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> num := <span class="keyword">range</span> nums &#123;</span><br><span class="line">        fmt.Println(num)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在通过 <code>make</code> 创建 <code>Channels</code> 时指定第二个参数时创建的就是带缓存的 <code>Channels</code> , 第二个参数指定了该 <code>Channels</code> 的容量。可以使用 <code>len()</code> 和 <code>cap()</code> 获取该带缓存的 <code>Channels</code> 的有效元素和容量。</p>
+<p>带缓存的 <code>Channels</code> 使得向 <code>Channels</code> 执行发送操作不再阻塞, 但当超过缓存容量时, 会引发 <code>panic</code>, 所以缓存的容量大小要设置得当。 </p>
+<h5 id="2-不阻塞-main-goroutine"><a href="#2-不阻塞-main-goroutine" class="headerlink" title="2. 不阻塞 main goroutine"></a>2. 不阻塞 <code>main goroutine</code></h5><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"sync"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">    array := []<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;</span><br><span class="line">    nums := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> _, a := <span class="keyword">range</span> array &#123;</span><br><span class="line">        wg.Add(<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(a <span class="keyword">int</span>)</span></span>&#123;</span><br><span class="line">            <span class="keyword">defer</span> wg.Done()</span><br><span class="line">            nums &lt;- a</span><br><span class="line">        &#125;(a)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        wg.Wait()</span><br><span class="line">    	<span class="built_in">close</span>(nums)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> num := <span class="keyword">range</span> nums &#123;</span><br><span class="line">        fmt.Println(num)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里把 <code>wg.Wait()</code> 操作放到了子 <code>goroutine</code> 中, <code>main goroutine</code> 从<code>Channels</code> 中接收数据, 当 <code>Channels</code> 中的数据被取出时, 发送数据到 <code>Channels</code> 的 <code>goruntine</code>  就不在阻塞了, 接着执行 <code>wg.Done()</code>, 当 <code>wg</code> 中的所有都被 <code>Done()</code> 了, <code>wg.Wait()</code> 也就不在阻塞了, 这样所有的 <code>goroutine</code> 都不会阻塞了, 都会正常退出。</p>
+
+    
+  </div>
+
+</article>
+
+
+   
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持heaven</div>
+        <ul>
+        
+          <li class="item">
+            
+              <span>微信扫一扫</span>
+            
+            <img src="/images/qr-wechat.png" alt="">
+          </li>
+        
+          <li class="item">
+            
+              <span>支付宝扫一扫</span>
+            
+            <img src="/images/qr-alipay.png" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+   
+  <div class="box-prev-next clearfix">
+    <a class="show pull-left" href="/2019/01/27/python-classmethod-closure/">
+        <i class="icon icon-angle-left"></i>
+    </a>
+    <a class="hide pull-right" href="/">
+        <i class="icon icon-angle-right"></i>
+    </a>
+  </div>
+
+
+
+
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/archives/" rel="noopener noreferrer" target="_self">
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/category/" rel="noopener noreferrer" target="_self">
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/tag/" rel="noopener noreferrer" target="_self">
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/link/" rel="noopener noreferrer" target="_self">
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/about/" rel="noopener noreferrer" target="_self">
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/atom.xml" rel="noopener noreferrer" target="_blank">
+              RSS
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a class="CIRCLE" href="/search/" rel="noopener noreferrer" target="_self">
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-blog">
+    
+
+    
+
+    
+    
+
+    
+
+    
+    
+
+    
+
+<!-- Gitalk评论插件通用代码 -->
+<div id="gitalk-container"></div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+const gitalk = new Gitalk({
+  clientID: 'cab418d306ae6c85ac30',
+  clientSecret: '2111e7a88a575cde79c83e64b7e27dd8a333146f',
+  repo: 'blog-comment',
+  owner: 'heavenlwf',
+  // 在这里设置一下截取前50个字符串, 这是因为 github 对 label 的长度有了要求, 如果超过
+  // 50个字符串则会报错.
+  // id: location.pathname.split('/').pop().substring(0, 49),
+  id: location.pathname,
+  admin: ['heavenlwf'],
+  // facebook-like distraction free mode
+  distractionFreeMode: false
+})
+gitalk.render('gitalk-container')
+</script>
+<!-- Gitalk代码结束 -->
+
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>
