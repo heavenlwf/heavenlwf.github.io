@@ -7,7 +7,7 @@
 <head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
-  <title>go-channel-deadlock | 再见孙悟空</title>
+  <title>go 中的 channel 和 goroutine 使用时发生的 deadlock 问题 | 再见孙悟空</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -15,18 +15,18 @@
     <meta name="keywords" content="go,">
   
 
-  <meta name="description" content="go 中的 channel 和 goroutine 使用时发生的 deadlock 问题代码: 12345678910111213141516171819202122232425262728// test.gopackage mainimport (	&quot;fmt&quot;	&quot;sync&quot;)func main() &amp;#123;    var wg sync.WaitGroup    array := []int">
+  <meta name="description" content="代码: 12345678910111213141516171819202122232425262728// test.gopackage mainimport (	&quot;fmt&quot;	&quot;sync&quot;)func main() &amp;#123;    var wg sync.WaitGroup    array := []int&amp;#123;1, 2, 3&amp;#125;    nums := make(chan int">
 <meta name="keywords" content="go">
 <meta property="og:type" content="article">
-<meta property="og:title" content="go-channel-deadlock">
+<meta property="og:title" content="go 中的 channel 和 goroutine 使用时发生的 deadlock 问题">
 <meta property="og:url" content="http://liuwenfeng.xyz/2019/03/15/go-channel-deadlock/index.html">
 <meta property="og:site_name" content="再见孙悟空">
-<meta property="og:description" content="go 中的 channel 和 goroutine 使用时发生的 deadlock 问题代码: 12345678910111213141516171819202122232425262728// test.gopackage mainimport (	&quot;fmt&quot;	&quot;sync&quot;)func main() &amp;#123;    var wg sync.WaitGroup    array := []int">
+<meta property="og:description" content="代码: 12345678910111213141516171819202122232425262728// test.gopackage mainimport (	&quot;fmt&quot;	&quot;sync&quot;)func main() &amp;#123;    var wg sync.WaitGroup    array := []int&amp;#123;1, 2, 3&amp;#125;    nums := make(chan int">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-03-15T07:44:28.533Z">
+<meta property="og:updated_time" content="2019-03-15T07:46:35.355Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="go-channel-deadlock">
-<meta name="twitter:description" content="go 中的 channel 和 goroutine 使用时发生的 deadlock 问题代码: 12345678910111213141516171819202122232425262728// test.gopackage mainimport (	&quot;fmt&quot;	&quot;sync&quot;)func main() &amp;#123;    var wg sync.WaitGroup    array := []int">
+<meta name="twitter:title" content="go 中的 channel 和 goroutine 使用时发生的 deadlock 问题">
+<meta name="twitter:description" content="代码: 12345678910111213141516171819202122232425262728// test.gopackage mainimport (	&quot;fmt&quot;	&quot;sync&quot;)func main() &amp;#123;    var wg sync.WaitGroup    array := []int&amp;#123;1, 2, 3&amp;#125;    nums := make(chan int">
 
   
 
@@ -158,7 +158,7 @@ ga('send', 'pageview');
 
   <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
-    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#go-中的-channel-和-goroutine-使用时发生的-deadlock-问题"><span class="toc-text">go 中的 channel 和 goroutine 使用时发生的 deadlock 问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#解决方案"><span class="toc-text">解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1、使用非阻塞-带缓存-的-Channels"><span class="toc-text">1、使用非阻塞(带缓存)的 Channels</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-不阻塞-main-goroutine"><span class="toc-text">2. 不阻塞 main goroutine</span></a></li></ol></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#解决方案"><span class="toc-text">解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1、使用非阻塞-带缓存-的-Channels"><span class="toc-text">1、使用非阻塞(带缓存)的 Channels</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-不阻塞-main-goroutine"><span class="toc-text">2. 不阻塞 main goroutine</span></a></li></ol></li></ol>
   </div>
 
 
@@ -166,7 +166,7 @@ ga('send', 'pageview');
 <div class="content content-post CENTER">
    <article id="blog-go-channel-deadlock" class="article article-type-blog" itemprop="blogPost">
   <header class="article-header">
-    <h1 class="post-title">go-channel-deadlock</h1>
+    <h1 class="post-title">go 中的 channel 和 goroutine 使用时发生的 deadlock 问题</h1>
 
     <div class="article-meta">
       <span>
@@ -193,7 +193,7 @@ ga('send', 'pageview');
 
   <div class="article-content">
     
-      <h4 id="go-中的-channel-和-goroutine-使用时发生的-deadlock-问题"><a href="#go-中的-channel-和-goroutine-使用时发生的-deadlock-问题" class="headerlink" title="go 中的 channel 和 goroutine 使用时发生的 deadlock 问题"></a>go 中的 channel 和 goroutine 使用时发生的 deadlock 问题</h4><p>代码:</p>
+      <p>代码:</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// test.go</span></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"sync"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">    array := []<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;</span><br><span class="line">    nums := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> _, a := <span class="keyword">range</span> array &#123;</span><br><span class="line">        wg.Add(<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(a <span class="keyword">int</span>)</span></span>&#123;</span><br><span class="line">            <span class="keyword">defer</span> wg.Done()</span><br><span class="line">            nums &lt;- a</span><br><span class="line">        &#125;(a)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    wg.Wait()</span><br><span class="line">    <span class="built_in">close</span>(nums)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> num := <span class="keyword">range</span> nums &#123;</span><br><span class="line">        fmt.Println(num)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>执行:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ go run test.go</span><br><span class="line">fatal error: all goroutines are asleep - deadlock!</span><br><span class="line"></span><br><span class="line">goroutine 1 [semacquire]:</span><br><span class="line">sync.runtime_Semacquire(0xc42008601c)</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
