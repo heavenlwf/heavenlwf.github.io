@@ -100,15 +100,15 @@
     <link href="http://liuwenfeng.xyz/2019/01/01/hello-2019/"/>
     <id>http://liuwenfeng.xyz/2019/01/01/hello-2019/</id>
     <published>2019-01-01T09:16:28.000Z</published>
-    <updated>2019-03-29T12:07:20.346Z</updated>
+    <updated>2019-03-29T12:07:59.046Z</updated>
     
-    <content type="html"><![CDATA[<h3 id="TODO"><a href="#TODO" class="headerlink" title="TODO"></a>TODO</h3><h4 id="书"><a href="#书" class="headerlink" title="书"></a>书</h4><h5 id="Done"><a href="#Done" class="headerlink" title="Done"></a>Done</h5><ul><li style="list-style: none"><input type="checkbox" checked> 淘宝技术这十年</li><li style="list-style: none"><input type="checkbox" checked> 图解HTTP</li><li style="list-style: none"><input type="checkbox" checked> Go语言圣经</li></ul><h5 id="Doing"><a href="#Doing" class="headerlink" title="Doing"></a>Doing</h5><ul><li style="list-style: none"><input type="checkbox"> 我的第一本算法书</li><li style="list-style: none"><input type="checkbox"> 高性能Mysql</li><li style="list-style: none"><input type="checkbox"> 编程之美</li><li style="list-style: none"><input type="checkbox"> 傅雷家书</li><li style="list-style: none"><input type="checkbox"> 红与黑</li><li style="list-style: none"><input type="checkbox"> 目送</li></ul><h4 id="玩"><a href="#玩" class="headerlink" title="玩"></a>玩</h4><ul><li style="list-style: none"><input type="checkbox"> Ti9 上海</li><li style="list-style: none"><input type="checkbox"> 日本</li></ul>]]></content>
+    <content type="html"><![CDATA[<h3 id="TODO"><a href="#TODO" class="headerlink" title="TODO"></a>TODO</h3><h4 id="书"><a href="#书" class="headerlink" title="书"></a>书</h4><ul><li style="list-style: none"><input type="checkbox" checked> 淘宝技术这十年</li><li style="list-style: none"><input type="checkbox" checked> 图解HTTP</li><li><p>[x] Go语言圣经</p></li><li><p>[ ] 我的第一本算法书</p></li><li style="list-style: none"><input type="checkbox"> 高性能Mysql</li><li style="list-style: none"><input type="checkbox"> 编程之美</li><li style="list-style: none"><input type="checkbox"> 傅雷家书</li><li style="list-style: none"><input type="checkbox"> 红与黑</li><li style="list-style: none"><input type="checkbox"> 目送</li></ul><h4 id="玩"><a href="#玩" class="headerlink" title="玩"></a>玩</h4><ul><li style="list-style: none"><input type="checkbox"> Ti9 上海</li><li style="list-style: none"><input type="checkbox"> 日本</li></ul>]]></content>
     
     <summary type="html">
     
       
       
-        &lt;h3 id=&quot;TODO&quot;&gt;&lt;a href=&quot;#TODO&quot; class=&quot;headerlink&quot; title=&quot;TODO&quot;&gt;&lt;/a&gt;TODO&lt;/h3&gt;&lt;h4 id=&quot;书&quot;&gt;&lt;a href=&quot;#书&quot; class=&quot;headerlink&quot; title=&quot;书&quot;&gt;&lt;/a&gt;书&lt;/h4&gt;&lt;h
+        &lt;h3 id=&quot;TODO&quot;&gt;&lt;a href=&quot;#TODO&quot; class=&quot;headerlink&quot; title=&quot;TODO&quot;&gt;&lt;/a&gt;TODO&lt;/h3&gt;&lt;h4 id=&quot;书&quot;&gt;&lt;a href=&quot;#书&quot; class=&quot;headerlink&quot; title=&quot;书&quot;&gt;&lt;/a&gt;书&lt;/h4&gt;&lt;u
       
     
     </summary>
