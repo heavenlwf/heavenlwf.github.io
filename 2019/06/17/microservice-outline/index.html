@@ -15,20 +15,20 @@
     <meta name="keywords" content="Architecture,">
   
 
-  <meta name="description" content="微服务概述单体应用早期在业务规模不大、开发团队人员规模较小的时候, 一般都是采用单体应用来开发和部署, 以我们的业务为例:  所有的业务都在 station 工程, 只需要通过 uwsgi 启动 Django 服务, 然后 nginx 将流量转发到 uwsgi 即可.  优点学习成本低，开发上手快，测试、部署、运维也比较方便，甚至一个人就可以完成一个网站的开发与部署。 缺点当业务规模逐渐扩大, 开">
+  <meta name="description" content="####单体应用 早期在业务规模不大、开发团队人员规模较小的时候, 一般都是采用单体应用来开发和部署, 以我们的业务为例:  所有的业务都在 station 工程, 只需要通过 uwsgi 启动 Django 服务, 然后 nginx 将流量转发到 uwsgi 即可.  优点学习成本低，开发上手快，测试、部署、运维也比较方便，甚至一个人就可以完成一个网站的开发与部署。 缺点当业务规模逐渐扩大, 开">
 <meta name="keywords" content="Architecture">
 <meta property="og:type" content="article">
 <meta property="og:title" content="微服务概述">
 <meta property="og:url" content="http://liuwenfeng.xyz/2019/06/17/microservice-outline/index.html">
 <meta property="og:site_name" content="再见孙悟空">
-<meta property="og:description" content="微服务概述单体应用早期在业务规模不大、开发团队人员规模较小的时候, 一般都是采用单体应用来开发和部署, 以我们的业务为例:  所有的业务都在 station 工程, 只需要通过 uwsgi 启动 Django 服务, 然后 nginx 将流量转发到 uwsgi 即可.  优点学习成本低，开发上手快，测试、部署、运维也比较方便，甚至一个人就可以完成一个网站的开发与部署。 缺点当业务规模逐渐扩大, 开">
+<meta property="og:description" content="####单体应用 早期在业务规模不大、开发团队人员规模较小的时候, 一般都是采用单体应用来开发和部署, 以我们的业务为例:  所有的业务都在 station 工程, 只需要通过 uwsgi 启动 Django 服务, 然后 nginx 将流量转发到 uwsgi 即可.  优点学习成本低，开发上手快，测试、部署、运维也比较方便，甚至一个人就可以完成一个网站的开发与部署。 缺点当业务规模逐渐扩大, 开">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://ww1.sinaimg.cn/large/889f7228gy1g3qcv0h921j20qd0esad2.jpg">
 <meta property="og:image" content="http://ww1.sinaimg.cn/large/889f7228gy1g3w4euo5efj20ux0hign7.jpg">
-<meta property="og:updated_time" content="2019-06-17T06:49:06.380Z">
+<meta property="og:updated_time" content="2019-06-17T06:52:43.773Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="微服务概述">
-<meta name="twitter:description" content="微服务概述单体应用早期在业务规模不大、开发团队人员规模较小的时候, 一般都是采用单体应用来开发和部署, 以我们的业务为例:  所有的业务都在 station 工程, 只需要通过 uwsgi 启动 Django 服务, 然后 nginx 将流量转发到 uwsgi 即可.  优点学习成本低，开发上手快，测试、部署、运维也比较方便，甚至一个人就可以完成一个网站的开发与部署。 缺点当业务规模逐渐扩大, 开">
+<meta name="twitter:description" content="####单体应用 早期在业务规模不大、开发团队人员规模较小的时候, 一般都是采用单体应用来开发和部署, 以我们的业务为例:  所有的业务都在 station 工程, 只需要通过 uwsgi 启动 Django 服务, 然后 nginx 将流量转发到 uwsgi 即可.  优点学习成本低，开发上手快，测试、部署、运维也比较方便，甚至一个人就可以完成一个网站的开发与部署。 缺点当业务规模逐渐扩大, 开">
 <meta name="twitter:image" content="http://ww1.sinaimg.cn/large/889f7228gy1g3qcv0h921j20qd0esad2.jpg">
 
   
@@ -161,8 +161,8 @@ ga('send', 'pageview');
 
   <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
-    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#微服务概述"><span class="toc-text">微服务概述</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#单体应用"><span class="toc-text">单体应用</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#优点"><span class="toc-text">优点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#缺点"><span class="toc-text">缺点</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#服务化-SOA"><span class="toc-text">服务化(SOA)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#微服务"><span class="toc-text">微服务</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#服务如何定义"><span class="toc-text">服务如何定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#注册中心"><span class="toc-text">注册中心</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-注册中心-API"><span class="toc-text">1. 注册中心 API</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-集群部署"><span class="toc-text">2. 集群部署</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-服务健康状态检测"><span class="toc-text">3. 服务健康状态检测</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4-服务状态变更通知"><span class="toc-text">4. 服务状态变更通知</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#服务如何监控"><span class="toc-text">服务如何监控</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#服务如何治理"><span class="toc-text">服务如何治理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#故障如何定位"><span class="toc-text">故障如何定位</span></a></li></ol></li></ol>
-  </div>
+    <ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#优点"><span class="toc-text">优点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#缺点"><span class="toc-text">缺点</span></a></li></ol><li class="toc-item toc-level-4"><a class="toc-link" href="#服务化-SOA"><span class="toc-text">服务化(SOA)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#微服务"><span class="toc-text">微服务</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#服务如何定义"><span class="toc-text">服务如何定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#注册中心"><span class="toc-text">注册中心</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-注册中心-API"><span class="toc-text">1. 注册中心 API</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-集群部署"><span class="toc-text">2. 集群部署</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-服务健康状态检测"><span class="toc-text">3. 服务健康状态检测</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4-服务状态变更通知"><span class="toc-text">4. 服务状态变更通知</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#服务如何监控"><span class="toc-text">服务如何监控</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#服务如何治理"><span class="toc-text">服务如何治理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#故障如何定位"><span class="toc-text">故障如何定位</span></a>
+  </li></div>
 
 
 
@@ -196,7 +196,8 @@ ga('send', 'pageview');
 
   <div class="article-content">
     
-      <h3 id="微服务概述"><a href="#微服务概述" class="headerlink" title="微服务概述"></a>微服务概述</h3><h4 id="单体应用"><a href="#单体应用" class="headerlink" title="单体应用"></a>单体应用</h4><p>早期在业务规模不大、开发团队人员规模较小的时候, 一般都是采用单体应用来开发和部署, 以我们的业务为例:</p>
+      <p>####单体应用</p>
+<p>早期在业务规模不大、开发团队人员规模较小的时候, 一般都是采用单体应用来开发和部署, 以我们的业务为例:</p>
 <blockquote>
 <p>所有的业务都在 <code>station</code> 工程, 只需要通过 <code>uwsgi</code> 启动 <code>Django</code> 服务, 然后 <code>nginx</code> 将流量转发到 <code>uwsgi</code> 即可.</p>
 </blockquote>
