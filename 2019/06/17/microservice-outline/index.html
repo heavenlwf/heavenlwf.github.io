@@ -25,7 +25,7 @@
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://ww1.sinaimg.cn/large/889f7228gy1g3qcv0h921j20qd0esad2.jpg">
 <meta property="og:image" content="http://ww1.sinaimg.cn/large/889f7228gy1g3w4euo5efj20ux0hign7.jpg">
-<meta property="og:updated_time" content="2019-06-17T06:53:35.650Z">
+<meta property="og:updated_time" content="2019-06-17T06:53:38.527Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="微服务概述">
 <meta name="twitter:description" content="单体应用早期在业务规模不大、开发团队人员规模较小的时候, 一般都是采用单体应用来开发和部署, 以我们的业务为例:  所有的业务都在 station 工程, 只需要通过 uwsgi 启动 Django 服务, 然后 nginx 将流量转发到 uwsgi 即可.  优点学习成本低，开发上手快，测试、部署、运维也比较方便，甚至一个人就可以完成一个网站的开发与部署。 缺点当业务规模逐渐扩大, 开发人员也不">
@@ -161,7 +161,7 @@ ga('send', 'pageview');
 
   <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#单体应用"><span class="toc-text">单体应用</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#优点"><span class="toc-text">优点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#缺点"><span class="toc-text">缺点</span></a></li></ol></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#服务化-SOA"><span class="toc-text">服务化(SOA)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#微服务"><span class="toc-text">微服务</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#服务如何定义"><span class="toc-text">服务如何定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#注册中心"><span class="toc-text">注册中心</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-注册中心-API"><span class="toc-text">1. 注册中心 API</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-集群部署"><span class="toc-text">2. 集群部署</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-服务健康状态检测"><span class="toc-text">3. 服务健康状态检测</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4-服务状态变更通知"><span class="toc-text">4. 服务状态变更通知</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#服务如何监控"><span class="toc-text">服务如何监控</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#服务如何治理"><span class="toc-text">服务如何治理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#故障如何定位"><span class="toc-text">故障如何定位</span></a></li></ol></li>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#单体应用"><span class="toc-text">单体应用</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#优点"><span class="toc-text">优点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#缺点"><span class="toc-text">缺点</span></a></li></ol></li></ol><li class="toc-item toc-level-2"><a class="toc-link" href="#服务化-SOA"><span class="toc-text">服务化(SOA)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#微服务"><span class="toc-text">微服务</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#服务如何定义"><span class="toc-text">服务如何定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#注册中心"><span class="toc-text">注册中心</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-注册中心-API"><span class="toc-text">1. 注册中心 API</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-集群部署"><span class="toc-text">2. 集群部署</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-服务健康状态检测"><span class="toc-text">3. 服务健康状态检测</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4-服务状态变更通知"><span class="toc-text">4. 服务状态变更通知</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#服务如何监控"><span class="toc-text">服务如何监控</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#服务如何治理"><span class="toc-text">服务如何治理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#故障如何定位"><span class="toc-text">故障如何定位</span></a></li></ol></li>
   </div>
 
 
@@ -223,7 +223,7 @@ ga('send', 'pageview');
 <h2 id="服务化-SOA"><a href="#服务化-SOA" class="headerlink" title="服务化(SOA)"></a>服务化(SOA)</h2><p>为了解决单体服务的种种问题, 服务化的思想出现了</p>
 <p>服务化的就是把一个单体服务拆分成几个单独的服务, 每个服务按照服务描述文档所定义的服务契约行事, 对外部隐藏其实现逻辑. </p>
 <p>比如我们现在的架构: order, merchandise, account, notify就是 <code>SOA</code> 的服务, 这些服务通过手动修改 <code>nginx</code> 配置来实现服务注册和发现.</p>
-<h4 id="微服务"><a href="#微服务" class="headerlink" title="微服务"></a>微服务</h4><p>微服务是细粒度的 <code>SOA</code></p>
+<h2 id="微服务"><a href="#微服务" class="headerlink" title="微服务"></a>微服务</h2><p>微服务是细粒度的 <code>SOA</code></p>
 <ul>
 <li><p>独立部署</p>
 <blockquote>
