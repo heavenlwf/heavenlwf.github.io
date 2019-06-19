@@ -25,7 +25,7 @@
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://ww1.sinaimg.cn/large/889f7228gy1g3qcv0h921j20qd0esad2.jpg">
 <meta property="og:image" content="http://ww1.sinaimg.cn/large/889f7228gy1g3w4euo5efj20ux0hign7.jpg">
-<meta property="og:updated_time" content="2019-06-18T09:12:34.579Z">
+<meta property="og:updated_time" content="2019-06-19T07:52:17.507Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="微服务概述">
 <meta name="twitter:description" content="单体应用早期在业务规模不大、开发团队人员规模较小的时候, 一般都是采用单体应用来开发和部署, 以我们的业务为例:  所有的业务都在 station 工程, 只需要通过 uwsgi 启动 Django 服务, 然后 nginx 将流量转发到 uwsgi 即可.  优点学习成本低，开发上手快，测试、部署、运维也比较方便，甚至一个人就可以完成一个网站的开发与部署。 缺点当业务规模逐渐扩大, 开发人员也不">
@@ -248,7 +248,7 @@ ga('send', 'pageview');
 <blockquote>
 <p> <strong>微服务</strong> (Microservices) 是一种<a href="https://zh.wikipedia.org/wiki/软件架构" target="_blank" rel="noopener">软件架构风格</a>，它是以专注于单一责任与功能的小型功能区块 (Small Building Blocks) 为基础，利用模块化的方式组合出复杂的大型应用程序，各功能区块使用与语言无关 (Language-Independent/Language agnostic) 的 API 集相互通信。</p>
 </blockquote>
-<p>我的理解: 微服务架构是细粒度的 <code>SOA</code>, 从服务的定义到服务部署, 编排, 治理, 运维等等, 都有确切的解决方案。</p>
+<p>我的理解: 微服务架构是细粒度的 <code>SOA</code>, 从服务的定义到服务部署, 编排, 治理, 运维等等, 都有确切的解决方案。可以说微服务架构是随着 <code>Docker</code> 的盛行而流行的, 使用了 <code>Docker</code> 之后，由开发写各个服务所需的 <code>Dockerfile</code> ，然后统一的进行镜像的构建和线上环境的发布。</p>
 <ul>
 <li><p>独立部署</p>
 <blockquote>
@@ -266,6 +266,7 @@ ga('send', 'pageview');
 </blockquote>
 </li>
 </ul>
+<p>总结来说，<strong>微服务架构是将复杂臃肿的单体应用进行细粒度的服务化拆分，每个拆分出来的服务各自独立打包部署，并交由小团队进行开发和运维，从而极大地提高了应用交付的效率。</strong></p>
 <p>微服务化面临的问题:</p>
 <ul>
 <li><strong>服务如何定义</strong>。 对于微服务来说, 每个服务都运行在自己的进程空间中, 互相调用采用接口的形式, 服务间的调用通过接口描述来约定, 约定包括: 通信协议, 接口名, 接口参数, 返回值等。</li>
@@ -292,7 +293,9 @@ ga('send', 'pageview');
 <h4 id="4-服务状态变更通知"><a href="#4-服务状态变更通知" class="headerlink" title="4. 服务状态变更通知"></a>4. <strong>服务状态变更通知</strong></h4><p>一旦注册中心探测到有服务提供者节点新加入或者被剔除，就必须立刻通知所有订阅该服务的服务消费者，刷新本地缓存的服务节点信息，确保服务调用不会请求不可用的服务提供者节点。</p>
 <p>比如etcd，会提供 Watcher 机制，去实现状态变更后通知给服务调用方的，服务调用方通过 Watch 特定的服务，当这个服务的信息有变更时，注册中心会通知调用方，调用方读取到变更的数据，然后刷新本地缓存的服务器节点信息。</p>
 <h3 id="服务编排"><a href="#服务编排" class="headerlink" title="服务编排"></a>服务编排</h3><h3 id="服务如何监控"><a href="#服务如何监控" class="headerlink" title="服务如何监控"></a>服务如何监控</h3><p>对服务的监控是必不可少的，微服务也是一样，监控的指标也基本一致: QPS，PV，响应时间，错误率等等。</p>
-<h3 id="故障如何定位"><a href="#故障如何定位" class="headerlink" title="故障如何定位"></a>故障如何定位</h3><p>要定位故障，就得知道每次用户请求经过了哪些服务调用，以及每个服务调用的详细信息。那么就要有一个服务追踪的东西去监控每一个用户请求。成熟的追踪系统有很多，比如: <code>twitter</code> 开源的 <a href="https://github.com/apache/incubator-zipkin" target="_blank" rel="noopener">zipkin</a> , <code>google</code> 的 <a href="https://ai.google/research/pubs/pub36356" target="_blank" rel="noopener">Dapper</a>, 阿里的 <a href="https://cn.aliyun.com/aliware/news/monitoringsolution" target="_blank" rel="noopener">鹰眼</a>, 美团的 <a href="http://tech.meituan.com/mt_mtrace.html" target="_blank" rel="noopener">MTrace</a> 等。</p>
+<h3 id="故障如何定位"><a href="#故障如何定位" class="headerlink" title="故障如何定位"></a>故障如何定位</h3><p>要定位故障，就得知道每次用户请求经过了哪些服务调用，以及每个服务调用的详细信息。那么就要有一个服务追踪的东西去监控每一个用户请求经过了哪些服务的调用以及调用的具体信息。</p>
+<p>比如我们现在的系统用的就是全局唯一的 <code>request_id</code> 来标识一个用户请求，由客户端发起请求时生成，贯穿整个调用链。但当调用链很复杂时，如果只有一个 <code>request_id</code> 是很难具体体现一个完整的调用过程信息的。通常还会加一个 <code>span_id</code>，标识某个调用跨度，在方法/服务调用前生成，并记录时间。调用完之后将 <code>trace_id/request_id</code> 和 <code>span_id</code> 统一上报。</p>
+<p>成熟的追踪系统有很多，比如: <code>twitter</code> 开源的 <a href="https://github.com/apache/incubator-zipkin" target="_blank" rel="noopener">zipkin</a> , <code>google</code> 的 <a href="https://ai.google/research/pubs/pub36356" target="_blank" rel="noopener">Dapper</a>, 阿里的 <a href="https://cn.aliyun.com/aliware/news/monitoringsolution" target="_blank" rel="noopener">鹰眼</a>, 美团的 <a href="http://tech.meituan.com/mt_mtrace.html" target="_blank" rel="noopener">MTrace</a> 等。</p>
 <h3 id="服务如何治理"><a href="#服务如何治理" class="headerlink" title="服务如何治理"></a>服务如何治理</h3>
     
   </div>
