@@ -25,7 +25,7 @@
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://ww1.sinaimg.cn/large/889f7228gy1g3qcv0h921j20qd0esad2.jpg">
 <meta property="og:image" content="http://ww1.sinaimg.cn/large/889f7228gy1g3w4euo5efj20ux0hign7.jpg">
-<meta property="og:updated_time" content="2019-06-19T07:52:17.507Z">
+<meta property="og:updated_time" content="2019-06-20T07:46:33.992Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="微服务概述">
 <meta name="twitter:description" content="单体应用早期在业务规模不大、开发团队人员规模较小的时候, 一般都是采用单体应用来开发和部署, 以我们的业务为例:  所有的业务都在 station 工程, 只需要通过 uwsgi 启动 Django 服务, 然后 nginx 将流量转发到 uwsgi 即可.  优点学习成本低，开发上手快，测试、部署、运维也比较方便，甚至一个人就可以完成一个网站的开发与部署。 缺点当业务规模逐渐扩大, 开发人员也不">
@@ -161,7 +161,7 @@ ga('send', 'pageview');
 
   <div id="toc" class="toc-article">
     <strong class="toc-title">文章目录</strong>
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#单体应用"><span class="toc-text">单体应用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#优点"><span class="toc-text">优点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#缺点"><span class="toc-text">缺点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#服务化-SOA"><span class="toc-text">服务化(SOA)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#微服务"><span class="toc-text">微服务</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#服务描述"><span class="toc-text">服务描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#注册中心"><span class="toc-text">注册中心</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-注册中心-API"><span class="toc-text">1. 注册中心 API</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-集群部署"><span class="toc-text">2. 集群部署</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-服务健康状态检测"><span class="toc-text">3. 服务健康状态检测</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-服务状态变更通知"><span class="toc-text">4. 服务状态变更通知</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#服务编排"><span class="toc-text">服务编排</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#服务如何监控"><span class="toc-text">服务如何监控</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#故障如何定位"><span class="toc-text">故障如何定位</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#服务如何治理"><span class="toc-text">服务如何治理</span></a></li></ol></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#单体应用"><span class="toc-text">单体应用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#优点"><span class="toc-text">优点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#缺点"><span class="toc-text">缺点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#服务化-SOA"><span class="toc-text">服务化(SOA)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#微服务"><span class="toc-text">微服务</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#服务描述"><span class="toc-text">服务描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#注册中心"><span class="toc-text">注册中心</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-注册中心-API"><span class="toc-text">1. 注册中心 API</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-集群部署"><span class="toc-text">2. 集群部署</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-服务健康状态检测"><span class="toc-text">3. 服务健康状态检测</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-服务状态变更通知"><span class="toc-text">4. 服务状态变更通知</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#服务如何监控"><span class="toc-text">服务如何监控</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#故障如何定位"><span class="toc-text">故障如何定位</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#服务如何治理"><span class="toc-text">服务如何治理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#节点管理"><span class="toc-text">节点管理</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1、注册中心主动摘除"><span class="toc-text">1、注册中心主动摘除</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2、服务消费者主动摘除"><span class="toc-text">2、服务消费者主动摘除</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#负载均衡"><span class="toc-text">负载均衡</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#服务路由"><span class="toc-text">服务路由</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#服务容错"><span class="toc-text">服务容错</span></a></li></ol></li></ol></li></ol>
   </div>
 
 
@@ -264,9 +264,9 @@ ga('send', 'pageview');
 <blockquote>
 <p>因为拆分为微服务之后，服务的数量变多，因此需要有统一的服务治理平台，来对各个服务进行管理。</p>
 </blockquote>
+<p>总结来说，<strong>微服务架构是将复杂臃肿的单体应用进行细粒度的服务化拆分，每个拆分出来的服务各自独立打包部署，并交由小团队进行开发和运维，从而极大地提高了应用交付的效率。并再次基础上配上相应的服务监控、追踪、治理等组件。</strong></p>
 </li>
 </ul>
-<p>总结来说，<strong>微服务架构是将复杂臃肿的单体应用进行细粒度的服务化拆分，每个拆分出来的服务各自独立打包部署，并交由小团队进行开发和运维，从而极大地提高了应用交付的效率。</strong></p>
 <p>微服务化面临的问题:</p>
 <ul>
 <li><strong>服务如何定义</strong>。 对于微服务来说, 每个服务都运行在自己的进程空间中, 互相调用采用接口的形式, 服务间的调用通过接口描述来约定, 约定包括: 通信协议, 接口名, 接口参数, 返回值等。</li>
@@ -292,11 +292,28 @@ ga('send', 'pageview');
 <h4 id="3-服务健康状态检测"><a href="#3-服务健康状态检测" class="headerlink" title="3. 服务健康状态检测"></a>3. <strong>服务健康状态检测</strong></h4><p>服务在注册中心注册后, 注册中心还得知道服务节点是否可用, 一般的做法是保持一个长连接, 服务节点定期向注册中心发送心跳包, 如果注册中心超时未收到心跳包, 注册中心就会认为这个节点不可用, 并把这个节点从注册中心删除。</p>
 <h4 id="4-服务状态变更通知"><a href="#4-服务状态变更通知" class="headerlink" title="4. 服务状态变更通知"></a>4. <strong>服务状态变更通知</strong></h4><p>一旦注册中心探测到有服务提供者节点新加入或者被剔除，就必须立刻通知所有订阅该服务的服务消费者，刷新本地缓存的服务节点信息，确保服务调用不会请求不可用的服务提供者节点。</p>
 <p>比如etcd，会提供 Watcher 机制，去实现状态变更后通知给服务调用方的，服务调用方通过 Watch 特定的服务，当这个服务的信息有变更时，注册中心会通知调用方，调用方读取到变更的数据，然后刷新本地缓存的服务器节点信息。</p>
-<h3 id="服务编排"><a href="#服务编排" class="headerlink" title="服务编排"></a>服务编排</h3><h3 id="服务如何监控"><a href="#服务如何监控" class="headerlink" title="服务如何监控"></a>服务如何监控</h3><p>对服务的监控是必不可少的，微服务也是一样，监控的指标也基本一致: QPS，PV，响应时间，错误率等等。</p>
+<h3 id="服务如何监控"><a href="#服务如何监控" class="headerlink" title="服务如何监控"></a>服务如何监控</h3><p>对服务的监控是必不可少的，微服务也是一样，监控的指标也基本一致: QPS，PV，响应时间，错误率等等。</p>
 <h3 id="故障如何定位"><a href="#故障如何定位" class="headerlink" title="故障如何定位"></a>故障如何定位</h3><p>要定位故障，就得知道每次用户请求经过了哪些服务调用，以及每个服务调用的详细信息。那么就要有一个服务追踪的东西去监控每一个用户请求经过了哪些服务的调用以及调用的具体信息。</p>
 <p>比如我们现在的系统用的就是全局唯一的 <code>request_id</code> 来标识一个用户请求，由客户端发起请求时生成，贯穿整个调用链。但当调用链很复杂时，如果只有一个 <code>request_id</code> 是很难具体体现一个完整的调用过程信息的。通常还会加一个 <code>span_id</code>，标识某个调用跨度，在方法/服务调用前生成，并记录时间。调用完之后将 <code>trace_id/request_id</code> 和 <code>span_id</code> 统一上报。</p>
 <p>成熟的追踪系统有很多，比如: <code>twitter</code> 开源的 <a href="https://github.com/apache/incubator-zipkin" target="_blank" rel="noopener">zipkin</a> , <code>google</code> 的 <a href="https://ai.google/research/pubs/pub36356" target="_blank" rel="noopener">Dapper</a>, 阿里的 <a href="https://cn.aliyun.com/aliware/news/monitoringsolution" target="_blank" rel="noopener">鹰眼</a>, 美团的 <a href="http://tech.meituan.com/mt_mtrace.html" target="_blank" rel="noopener">MTrace</a> 等。</p>
-<h3 id="服务如何治理"><a href="#服务如何治理" class="headerlink" title="服务如何治理"></a>服务如何治理</h3>
+<h3 id="服务如何治理"><a href="#服务如何治理" class="headerlink" title="服务如何治理"></a>服务如何治理</h3><p>调用关系由本地调用改成远程调用后会增加很多问题，比如网络故障，节点宕机，节点负载过高等等。对于这些情况，都由对应的处理策略。</p>
+<h4 id="节点管理"><a href="#节点管理" class="headerlink" title="节点管理"></a>节点管理</h4><h5 id="1、注册中心主动摘除"><a href="#1、注册中心主动摘除" class="headerlink" title="1、注册中心主动摘除"></a>1、注册中心主动摘除</h5><p>前面说过，注册中心和服务提供节点之间会维持一个长链接，定期发送一个心跳包来检测服务提供者是否不可用，如果超时未收到服务提供者的 <code>ping</code> ，那么就认为次节点不可用，把这个节点从服务器列表里面踢出。</p>
+<h5 id="2、服务消费者主动摘除"><a href="#2、服务消费者主动摘除" class="headerlink" title="2、服务消费者主动摘除"></a>2、服务消费者主动摘除</h5><p>仔细想想注册中心主动剔除策略还是会有点问题，考虑下面这种情况: 注册中心和服务提供者之间的网络出现延迟，导致注册中心超时没收到服务提供者的心跳包，那么注册中心就会把这个节点给摘除掉，而此时服务消费者和服务提供者之间其实并没有任何故障。所以就有了另一种策略，由服务消费者去剔除这个节点，当服务消费者调用服务提供者失败，就把这个节点从内存中摘除。</p>
+<h4 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h4><p>一般情况同一个服务，服务提供者会不止一个，那么就得选取一个节点去调用。通常的话有这几种方式。</p>
+<ul>
+<li><p><strong>随机</strong>    从可用节点随机选取一个节点进行调用，这样就不管每台机器的性能，每台机器的调用量基本一致。</p>
+</li>
+<li><p><strong>权重</strong>    给每台机器配置权重，可以给不同性能的机器分配不同的权重，根据机器的性能来决定承受多少调用量。</p>
+</li>
+<li><strong>最少活跃调用算法</strong>    这种算法是在服务消费者这一端的内存里动态维护着同每一个服务节点之间的连接数，当调用某个服务节点时，就给与这个服务节点之间的连接数加 1，调用返回后，就给连接数减 1。然后每次在选择服务节点时，根据内存里维护的连接数倒序排列，选择连接数最小的节点发起调用，也就是选择了调用量最小的服务节点，性能理论上也是最优的。</li>
+<li><strong>一致性 Hash 算法</strong>    指相同参数的请求总是发到同一服务节点。当某一个服务节点出现故障时，原本发往该节点的请求，基于虚拟节点机制，平摊到其他节点上，不会引起剧烈变动。</li>
+</ul>
+<h4 id="服务路由"><a href="#服务路由" class="headerlink" title="服务路由"></a>服务路由</h4><p>对于服务消费者而言，在内存中的可用服务节点列表中选择哪个节点不仅由负载均衡算法决定，还由路由规则确定。路由规则就是通过一定的规则如条件表达式或者正则表达式来限定服务节点的选择范围。比如存在两个版本的服务: <code>/api/v1</code> 和 <code>/api/v2</code>, 部分流量路由到 <code>/api/v2</code> 上，没问题了之后再把所有流量路由到 <code>/api/v2</code> 上，这也满足了灰度的需求。实现一般由两种:</p>
+<ul>
+<li><strong>静态</strong>    在服务消费者写死</li>
+<li><strong>动态</strong>    路由规则放在注册中心，服务消费者定期去请求注册中心来同步本地的路由规则，要想修改路由规则(灰度)，只需修改注册中心的路由规则，等下一个同步周期到了，服务消费者本地的路由规则就会更新。</li>
+</ul>
+<h4 id="服务容错"><a href="#服务容错" class="headerlink" title="服务容错"></a>服务容错</h4>
     
   </div>
 
