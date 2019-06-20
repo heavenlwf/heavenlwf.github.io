@@ -25,7 +25,7 @@
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://ww1.sinaimg.cn/large/889f7228gy1g3qcv0h921j20qd0esad2.jpg">
 <meta property="og:image" content="http://ww1.sinaimg.cn/large/889f7228gy1g3w4euo5efj20ux0hign7.jpg">
-<meta property="og:updated_time" content="2019-06-20T07:52:58.508Z">
+<meta property="og:updated_time" content="2019-06-20T08:52:58.422Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="微服务概述">
 <meta name="twitter:description" content="单体应用早期在业务规模不大、开发团队人员规模较小的时候, 一般都是采用单体应用来开发和部署, 以我们的业务为例:  所有的业务都在 station 工程, 只需要通过 uwsgi 启动 Django 服务, 然后 nginx 将流量转发到 uwsgi 即可.  优点学习成本低，开发上手快，测试、部署、运维也比较方便，甚至一个人就可以完成一个网站的开发与部署。 缺点当业务规模逐渐扩大, 开发人员也不">
@@ -286,6 +286,7 @@ ga('send', 'pageview');
 <li>当 RPC Server 节点发生变更时，注册中心会同步变更，RPC Client 感知后会刷新本地内存中缓存的服务节点列表。</li>
 <li>RPC Client 从本地缓存的服务节点列表中，基于负载均衡算法选择一台 RPC Sever 发起调用。</li>
 </ul>
+<p>现在主流的注册中心有: <code>apache</code> 的 <a href="https://github.com/apache/zookeeper" target="_blank" rel="noopener">zookeeper</a>，后起之秀 <a href="https://github.com/etcd-io/etcd" target="_blank" rel="noopener">etcd</a>(要搭配其他组件) 和 <a href="https://github.com/hashicorp/consul" target="_blank" rel="noopener">consul</a>。</p>
 <p>每个注册中心必须提供下面这些东西:</p>
 <h3 id="1-注册中心-API"><a href="#1-注册中心-API" class="headerlink" title="1. 注册中心 API"></a>1. <strong>注册中心 API</strong></h3><p>注册中心必须提供一些基本的API, 如: 服务注册, 服务注销, 心跳, 服务订阅, 服务变更, 服务查询, 修改等接口</p>
 <h3 id="2-集群部署"><a href="#2-集群部署" class="headerlink" title="2. 集群部署"></a>2. 集群部署</h3><p>作为服务调用的桥梁, 注册中心的重要性不言而喻, 所以注册中心都是使用集群来部署, 用分布式强一致性算法(Raft/Paxos)来保证数据的强一致性。</p>
@@ -313,7 +314,14 @@ ga('send', 'pageview');
 <li><strong>静态</strong>    在服务消费者写死</li>
 <li><strong>动态</strong>    路由规则放在注册中心，服务消费者定期去请求注册中心来同步本地的路由规则，要想修改路由规则(灰度)，只需修改注册中心的路由规则，等下一个同步周期到了，服务消费者本地的路由规则就会更新。</li>
 </ul>
-<h3 id="服务容错"><a href="#服务容错" class="headerlink" title="服务容错"></a>服务容错</h3>
+<h3 id="服务容错"><a href="#服务容错" class="headerlink" title="服务容错"></a>服务容错</h3><p>前面说过，服务提供方可能因为一些原因导致调用失败，这里就需要一个容错的机制，一般有这几种:</p>
+<ul>
+<li><strong>失败自动切换</strong>    服务消费者调用失败后自动从下一个可用节点发起调用，可设置一定的重试次数，一般的读请求可以这么做。</li>
+<li><strong>失败通知</strong>    对于非幂等的写请求，不能像上面那样操作，一般写请求失败的话会先查询一遍服务端的状态，判断写请求是否成功，再来执行下一步操作。</li>
+<li><strong>快速失败</strong>    就是服务消费者调用一次失败后，不再重试。实际在业务执行时，一般非核心业务的调用，会采用快速失败策略，调用失败后一般就记录下失败日志就返回了。</li>
+<li><strong>失败缓存</strong>    就是服务消费者调用失败或者超时后，不立即发起重试，而是隔一段时间后再次尝试发起调用。比如后端服务可能一段时间内都有问题，如果立即发起重试，可能会加剧问题，反而不利于后端服务的恢复。如果隔一段时间待后端节点恢复后，再次发起调用效果会更好。</li>
+</ul>
+
     
   </div>
 
