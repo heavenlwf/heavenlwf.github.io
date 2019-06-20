@@ -25,7 +25,7 @@
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://ww1.sinaimg.cn/large/889f7228gy1g3qcv0h921j20qd0esad2.jpg">
 <meta property="og:image" content="http://ww1.sinaimg.cn/large/889f7228gy1g3w4euo5efj20ux0hign7.jpg">
-<meta property="og:updated_time" content="2019-06-20T08:52:58.422Z">
+<meta property="og:updated_time" content="2019-06-20T10:48:51.291Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="微服务概述">
 <meta name="twitter:description" content="单体应用早期在业务规模不大、开发团队人员规模较小的时候, 一般都是采用单体应用来开发和部署, 以我们的业务为例:  所有的业务都在 station 工程, 只需要通过 uwsgi 启动 Django 服务, 然后 nginx 将流量转发到 uwsgi 即可.  优点学习成本低，开发上手快，测试、部署、运维也比较方便，甚至一个人就可以完成一个网站的开发与部署。 缺点当业务规模逐渐扩大, 开发人员也不">
@@ -244,7 +244,7 @@ ga('send', 'pageview');
 </li>
 </ul>
 <p>我们现在的架构就有点像但却不是SOA的架构, 封装了几个单独的服务 <code>order</code>, <code>merchandise</code> 等。通过手动修改 <code>Nginx</code> 配置来实现描述信息。但服务间并没有一个描述文件去定义服务调用前后的信息。</p>
-<h1 id="微服务"><a href="#微服务" class="headerlink" title="微服务"></a>微服务</h1><p>微服务没有官方的定义， 准确的说，根本就没有定义。<a href="[https://zh.wikipedia.org/wiki/%E5%BE%AE%E6%9C%8D%E5%8B%99](https://zh.wikipedia.org/wiki/微服務">维基</a>)是这么介绍微服务的:</p>
+<h1 id="微服务"><a href="#微服务" class="headerlink" title="微服务"></a>微服务</h1><p>微服务没有官方的定义， 准确的说，根本就没有定义。<a href="[https://zh.wikipedia.org/wiki/%E5%BE%AE%E6%9C%8D%E5%8B%99](https://zh.wikipedia.org/wiki/微服務">维基</a>是这么介绍微服务的:</p>
 <blockquote>
 <p> <strong>微服务</strong> (Microservices) 是一种<a href="https://zh.wikipedia.org/wiki/软件架构" target="_blank" rel="noopener">软件架构风格</a>，它是以专注于单一责任与功能的小型功能区块 (Small Building Blocks) 为基础，利用模块化的方式组合出复杂的大型应用程序，各功能区块使用与语言无关 (Language-Independent/Language agnostic) 的 API 集相互通信。</p>
 </blockquote>
