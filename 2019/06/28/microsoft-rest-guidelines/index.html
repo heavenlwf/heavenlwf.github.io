@@ -1,27 +1,32 @@
 <!DOCTYPE html>
 
 
-  <html class="light page-archives">
+  <html class="light page-blog">
 
 
 <head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
-  <title>Archives | 再见孙悟空</title>
+  <title>Microsoft REST API指南 | 再见孙悟空</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   
-    <meta name="keywords" content="Heavenlwf,Hexo主题,backend,Python,Go">
+    <meta name="keywords" content="code,">
   
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="再见孙悟空">
-<meta property="og:url" content="http://liuwenfeng.xyz/archives/index.html">
+  <meta name="description" content="1.摘要  Microsoft REST API指南作为一种设计原则，鼓励应用程序开发人员通过RESTful HTTP接口为他们提供可访问的资源。为了在遵循Microsoft REST API准则的平台上为开发人员提供最顺畅的体验，REST API应遵循一致的设计准则，以便使用它们变得简单直观。 本文档建立了Microsoft REST API应遵循的准则，以便一致地开发RESTful接口。 2.">
+<meta name="keywords" content="code">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Microsoft REST API指南">
+<meta property="og:url" content="http://liuwenfeng.xyz/2019/06/28/microsoft-rest-guidelines/index.html">
 <meta property="og:site_name" content="再见孙悟空">
+<meta property="og:description" content="1.摘要  Microsoft REST API指南作为一种设计原则，鼓励应用程序开发人员通过RESTful HTTP接口为他们提供可访问的资源。为了在遵循Microsoft REST API准则的平台上为开发人员提供最顺畅的体验，REST API应遵循一致的设计准则，以便使用它们变得简单直观。 本文档建立了Microsoft REST API应遵循的准则，以便一致地开发RESTful接口。 2.">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-06-28T08:46:21.228Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="再见孙悟空">
+<meta name="twitter:title" content="Microsoft REST API指南">
+<meta name="twitter:description" content="1.摘要  Microsoft REST API指南作为一种设计原则，鼓励应用程序开发人员通过RESTful HTTP接口为他们提供可访问的资源。为了在遵循Microsoft REST API准则的平台上为开发人员提供最顺畅的体验，REST API应遵循一致的设计准则，以便使用它们变得简单直观。 本文档建立了Microsoft REST API应遵循的准则，以便一致地开发RESTful接口。 2.">
 
   
 
@@ -92,17 +97,8 @@ ga('send', 'pageview');
     <span id="toolbox-mobile" class="toolbox-mobile">别摸我</span>
   
 
-  <div class="content content-archive">
-  <div class="page-header">
-
-  
-    <div class="breadcrumb">
-      <div class="location">博客</div>
-      <i class="icon-location"></i>
-    </div>
-  
-
-  
+  <div class="post-header CENTER">
+   
   <div class="toolbox">
     <a class="toolbox-entry" href="/">
       <span class="toolbox-entry-text">别摸我</span>
@@ -157,136 +153,110 @@ ga('send', 'pageview');
   </div>
 
 
+</div>
 
-  <div class="box-blog-info">
-    <a class="avatar" href="/">
-      <img src="/images/avatar.jpg" alt="">
-    </a>
-    <div class="info">
-      <h3 class="name" style="font-family: calligraffittiregular">
-        Heaven
-      </h3>
-      <div class="slogan">
-        your fingertip owns the power of changing the world
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2"><span class="toc-text">1.摘要</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#2-目录"><span class="toc-text">2. 目录</span></a>
+  </li></div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="blog-microsoft-rest-guidelines" class="article article-type-blog" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">Microsoft REST API指南</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2019.06.28</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>Heaven</span>
+        </span>
+      
+
+      
+
+
+      
+
+      
+      
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <h2 id="2">1.摘要</h2>
+
+<p>Microsoft REST API指南作为一种设计原则，鼓励应用程序开发人员通过RESTful HTTP接口为他们提供可访问的资源。为了在遵循Microsoft REST API准则的平台上为开发人员提供最顺畅的体验，REST API应遵循一致的设计准则，以便使用它们变得简单直观。</p>
+<p>本文档建立了Microsoft REST API应遵循的准则，以便一致地开发RESTful接口。</p>
+<h1 id="2-目录"><a href="#2-目录" class="headerlink" title="2. 目录"></a>2. 目录</h1><ul>
+<li><p><a href="#1">Microsoft REST API准则工作组</a></p>
+</li>
+<li><p><a href="#2">1.摘要</a></p>
+</li>
+</ul>
+
+    
+  </div>
+
+</article>
+
+
+   
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持heaven</div>
+        <ul>
+        
+          <li class="item">
+            
+              <span>微信扫一扫</span>
+            
+            <img src="/images/qr-wechat.png" alt="">
+          </li>
+        
+          <li class="item">
+            
+              <span>支付宝扫一扫</span>
+            
+            <img src="/images/qr-alipay.png" alt="">
+          </li>
+        
+        </ul>
       </div>
     </div>
   </div>
 
+
+   
+  <div class="box-prev-next clearfix">
+    <a class="show pull-left" href="/2019/06/27/microservice-outline/">
+        <i class="icon icon-angle-left"></i>
+    </a>
+    <a class="hide pull-right" href="/">
+        <i class="icon icon-angle-right"></i>
+    </a>
+  </div>
+
+
+
+
 </div>
 
 
-  <div class="post-list-box archive-body">
-    <ul class="list-post">  <li class="item-year item item-title item-title-4">
-    <a href="/archives/2019" class="text-year">
-      2019
-      <i class="icon-zhu"></i>
-      
-    </a>
-  </li>
-<li class="item-post item">
-  <span class="post-date">06-28</span>
-
-  
-  <a class="post-title" href="/2019/06/28/microsoft-rest-guidelines/">Microsoft REST API指南</a>
-
-
-</li>
-<li class="item-post item">
-  <span class="post-date">06-27</span>
-
-  
-  <a class="post-title" href="/2019/06/27/microservice-outline/">微服务概述</a>
-
-
-</li>
-<li class="item-post item">
-  <span class="post-date">03-18</span>
-
-  
-  <a class="post-title" href="/2019/03/18/go-switch-select/">go 中的 switch 和 select</a>
-
-
-</li>
-<li class="item-post item">
-  <span class="post-date">03-15</span>
-
-  
-  <a class="post-title" href="/2019/03/15/go-channel-deadlock/">go 中的 channel 和 goroutine 使用时发生的 deadlock 问题</a>
-
-
-</li>
-<li class="item-post item">
-  <span class="post-date">01-27</span>
-
-  
-  <a class="post-title" href="/2019/01/27/python-classmethod-closure的副本/">Python classmethod中的闭包问题</a>
-
-
-</li>
-<li class="item-post item">
-  <span class="post-date">01-27</span>
-
-  
-  <a class="post-title" href="/2019/01/27/python-classmethod-closure/">Python classmethod中的闭包问题</a>
-
-
-</li>
-<li class="item-post item">
-  <span class="post-date">01-01</span>
-
-  
-  <a class="post-title" href="/2019/01/01/hello-2019/">hello, 2019</a>
-
-
-</li>
-  <li class="item-year item item-title item-title-3">
-    <a href="/archives/2018" class="text-year">
-      2018
-      <i class="icon-gou"></i>
-      
-    </a>
-  </li>
-<li class="item-post item">
-  <span class="post-date">04-03</span>
-
-  
-  <a class="post-title" href="/2018/04/03/django-request-response/">Django源码分析(三)--HTTP请求到响应过程分析</a>
-
-
-</li>
-<li class="item-post item">
-  <span class="post-date">03-28</span>
-
-  
-  <a class="post-title" href="/2018/03/28/django-middleware/">Django源码分析(二)--middleware</a>
-
-
-</li>
-<li class="item-post item">
-  <span class="post-date">03-28</span>
-
-  
-  <a class="post-title" href="/2018/03/28/django-runserver-process/">Django源码分析(一)--runserver启动过程分析</a>
-
-
-</li>
-</ul>
-  </div>
-
-  <div class="archive-footer">
-    
-  <div class="pagination">
-    <nav class="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/archives/page/2/">2</a><a class="extend next" rel="next" href="/archives/page/2/"><i class="icon-angle-right"></i></a>
-    </nav>
-  </div>
-
-
-  </div>
-</div>
-
-
-
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
 
 
 
@@ -350,6 +320,49 @@ ga('send', 'pageview');
 </div>
 
 
+
+  
+      <div class="fexo-comments comments-blog">
+    
+
+    
+
+    
+    
+
+    
+
+    
+    
+
+    
+
+<!-- Gitalk评论插件通用代码 -->
+<div id="gitalk-container"></div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+const gitalk = new Gitalk({
+  clientID: 'cab418d306ae6c85ac30',
+  clientSecret: '2111e7a88a575cde79c83e64b7e27dd8a333146f',
+  repo: 'blog-comment',
+  owner: 'heavenlwf',
+  // 在这里设置一下截取前50个字符串, 这是因为 github 对 label 的长度有了要求, 如果超过
+  // 50个字符串则会报错.
+  // id: location.pathname.split('/').pop().substring(0, 49),
+  id: location.pathname,
+  admin: ['heavenlwf'],
+  // facebook-like distraction free mode
+  distractionFreeMode: false
+})
+gitalk.render('gitalk-container')
+</script>
+<!-- Gitalk代码结束 -->
+
+
+
+  </div>
 
   
 
