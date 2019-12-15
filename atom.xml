@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://liuwenfeng.xyz/"/>
-  <updated>2019-06-28T09:22:31.263Z</updated>
+  <updated>2019-07-30T09:18:42.578Z</updated>
   <id>http://liuwenfeng.xyz/</id>
   
   <author>
@@ -17,13 +17,59 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>etcd 的 lease 机制</title>
+    <link href="http://liuwenfeng.xyz/2019/07/30/etcd-lease/"/>
+    <id>http://liuwenfeng.xyz/2019/07/30/etcd-lease/</id>
+    <published>2019-07-30T09:16:47.000Z</published>
+    <updated>2019-07-30T09:18:42.578Z</updated>
+    
+    <content type="html"><![CDATA[<h4 id="etcd"><a href="#etcd" class="headerlink" title="etcd"></a>etcd</h4>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h4 id=&quot;etcd&quot;&gt;&lt;a href=&quot;#etcd&quot; class=&quot;headerlink&quot; title=&quot;etcd&quot;&gt;&lt;/a&gt;etcd&lt;/h4&gt;
+      
+    
+    </summary>
+    
+    
+      <category term="etcd" scheme="http://liuwenfeng.xyz/tags/etcd/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>go源码阅读 - heap实现</title>
+    <link href="http://liuwenfeng.xyz/2019/07/21/go-sourcecode-heap/"/>
+    <id>http://liuwenfeng.xyz/2019/07/21/go-sourcecode-heap/</id>
+    <published>2019-07-21T02:47:25.000Z</published>
+    <updated>2019-07-24T12:39:17.087Z</updated>
+    
+    <content type="html"><![CDATA[<h4 id="go-源码阅读-heap-实现"><a href="#go-源码阅读-heap-实现" class="headerlink" title="go 源码阅读 - heap 实现"></a>go 源码阅读 - heap 实现</h4><p><code>go</code> 中对于堆的实现很简单，代码不到100行，位于 <code>src/container/heap</code> 包下。</p><h5 id="Push"><a href="#Push" class="headerlink" title="Push"></a><code>Push</code></h5><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/container/heap/heap.go</span></span><br><span class="line"><span class="comment">// Push pushes the element x onto the heap.</span></span><br><span class="line"><span class="comment">// The complexity is O(log n) where n = h.Len().</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Push</span><span class="params">(h Interface, x <span class="keyword">interface</span>&#123;&#125;)</span></span> &#123;</span><br><span class="line">h.Push(x)</span><br><span class="line">up(h, h.Len()<span class="number">-1</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">up</span><span class="params">(h Interface, j <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line"><span class="keyword">for</span> &#123;</span><br><span class="line">i := (j - <span class="number">1</span>) / <span class="number">2</span> <span class="comment">// parent</span></span><br><span class="line"><span class="keyword">if</span> i == j || !h.Less(j, i) &#123;</span><br><span class="line"><span class="keyword">break</span></span><br><span class="line">&#125;</span><br><span class="line">h.Swap(i, j)</span><br><span class="line">j = i</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>可以看到，<code>push</code> 完之后， 会对 <code>push</code> 进去的元素进行 <code>up</code> 操作，<code>up</code> 方法会向上遍历，然后比较两者的大小(分最大堆和最小堆)，如果满足要交换的条件(最大堆是大于父节点，最小堆是小于父节点)，就交换两者的位置，一直到找到该元素正确的位置。时间复杂度 <code>O(log(n))</code></p><h5 id="Pop"><a href="#Pop" class="headerlink" title="Pop"></a><code>Pop</code></h5><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Pop removes and returns the minimum element (according to Less) from the heap.</span></span><br><span class="line"><span class="comment">// The complexity is O(log n) where n = h.Len().</span></span><br><span class="line"><span class="comment">// Pop is equivalent to Remove(h, 0).</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Pop</span><span class="params">(h Interface)</span> <span class="title">interface</span></span>&#123;&#125; &#123;</span><br><span class="line">n := h.Len() - <span class="number">1</span></span><br><span class="line">h.Swap(<span class="number">0</span>, n)</span><br><span class="line">down(h, <span class="number">0</span>, n)</span><br><span class="line"><span class="keyword">return</span> h.Pop()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">down</span><span class="params">(h Interface, i0, n <span class="keyword">int</span>)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">i := i0</span><br><span class="line"><span class="keyword">for</span> &#123;</span><br><span class="line">j1 := <span class="number">2</span>*i + <span class="number">1</span></span><br><span class="line"><span class="keyword">if</span> j1 &gt;= n || j1 &lt; <span class="number">0</span> &#123; <span class="comment">// j1 &lt; 0 after int overflow</span></span><br><span class="line"><span class="keyword">break</span></span><br><span class="line">&#125;</span><br><span class="line">j := j1 <span class="comment">// left child</span></span><br><span class="line"><span class="keyword">if</span> j2 := j1 + <span class="number">1</span>; j2 &lt; n &amp;&amp; h.Less(j2, j1) &#123;</span><br><span class="line">j = j2 <span class="comment">// = 2*i + 2  // right child</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> !h.Less(j, i) &#123;</span><br><span class="line"><span class="keyword">break</span></span><br><span class="line">&#125;</span><br><span class="line">h.Swap(i, j)</span><br><span class="line">i = j</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> i &gt; i0</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>要 <code>Pop</code> 一个元素时，<code>Pop</code> 出来的是最大值或者最小值，执行 <code>Pop</code> 时先将首位元素和末位元素交换位置，那么末尾元素就是堆首的元素了(最大值/最小值)，然后堆除去末尾元素的剩下值的堆首进行 <code>down</code> 操作，找到堆首元素应该在的正确位置。最后调用当前对象的 <code>Pop</code> 方法，把末尾元素pop出来，那么pop出来的就是该堆的最大值/最小值，并且剩下的堆也是一个最大堆/最小堆了。时间复杂度 <code>O(log(n))</code></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h4 id=&quot;go-源码阅读-heap-实现&quot;&gt;&lt;a href=&quot;#go-源码阅读-heap-实现&quot; class=&quot;headerlink&quot; title=&quot;go 源码阅读 - heap 实现&quot;&gt;&lt;/a&gt;go 源码阅读 - heap 实现&lt;/h4&gt;&lt;p&gt;&lt;code&gt;go&lt;/code
+      
+    
+    </summary>
+    
+    
+      <category term="go" scheme="http://liuwenfeng.xyz/tags/go/"/>
+    
+  </entry>
+  
+  <entry>
     <title>Microsoft REST API指南</title>
     <link href="http://liuwenfeng.xyz/2019/06/28/microsoft-rest-guidelines/"/>
     <id>http://liuwenfeng.xyz/2019/06/28/microsoft-rest-guidelines/</id>
     <published>2019-06-28T08:36:30.000Z</published>
-    <updated>2019-06-28T09:22:31.263Z</updated>
+    <updated>2019-06-28T09:52:09.582Z</updated>
     
-    <content type="html"><![CDATA[<h2 id="1">1.摘要</h2><p>Microsoft REST API指南作为一种设计原则，鼓励应用程序开发人员通过RESTful HTTP接口为他们提供可访问的资源。为了在遵循Microsoft REST API准则的平台上为开发人员提供最顺畅的体验，REST API应遵循一致的设计准则，以便使用它们变得简单直观。</p><p>本文档建立了Microsoft REST API应遵循的准则，以便一致地开发RESTful接口。</p><h2 id="2">2.目录</h2><ul><li><p><a href="#0">Microsoft REST API准则工作组</a></p></li><li><p><a href="#1">1.摘要</a></p></li><li><p><a href="#2">2.目录</a></p></li><li><p><a href="#3">3.介绍</a></p><ul><li><a href="#3.1">3.1推荐阅读</a></li></ul></li><li><a href="#4">4.关于指南</a></li></ul><h2 id="3">3.介绍</h2><p>开发人员通过HTTP接口访问大多数Microsoft Cloud Platform资源。尽管每个服务通常都提供特定于语言的框架来包装其API，但它们的所有操作最终都归结为HTTP请求。Microsoft必须支持广泛的客户端和服务，并且不能依赖于可用于每个开发环境的丰富框架。因此，这些指南的目标是确保具有基本HTTP支持的任何客户端可以更容易，统一地使用Microsoft REST API。</p><p>为了给开发人员提供最顺畅的体验，让这些API遵循一致的设计指南非常重要，这样才能使用它们变得简单直观。本文档建立了Microsoft REST API开发人员为了统一地开发此类API而应遵循的准则。</p><p>统一的好处是日积月累的: 统一之后允许团队利用通用代码，模式，文档和设计决策。</p><p>这些准则旨在实现以下目标:</p><ul><li>为Microsoft中的所有API端点定义统一的做法和模式。</li><li>尽可能地遵守业内普遍接受的REST / HTTP最佳实践。</li><li>通过REST接口轻松访问所有应用程序开发人员的Microsoft服务。</li><li>允许服务开发人员利用其他服务的先前工作来实现，测试和记录一致定义的REST端点。</li><li>允许合作伙伴（例如，非Microsoft实体）将这些准则用于他们自己的REST端点设计。</li></ul><p><strong>注意：本指南旨在与符合REST架构风格的构建服务保持一致，但它们不解决或要求构建遵循REST约束的服务。本文档中使用的术语“REST”是指本着REST的精神而不是本书坚持REST的服务。</strong></p><h3 id="3.1">3.1. 推荐阅读</h3><p>建议理解REST架构风格背后的理念，以开发良好的基于HTTP的服务。</p><p>如果您是RESTful设计的新手，这里有一些很好的资源:</p><p><a href="[https://zh.wikipedia.org/wiki/%E8%A1%A8%E7%8E%B0%E5%B1%82%E7%8A%B6%E6%80%81%E8%BD%AC%E6%8D%A2](https://zh.wikipedia.org/wiki/表现层状态转换">REST on Wikipedia</a>) — REST的通俗定义和核心思想概述。</p><p><a href="https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm" target="_blank" rel="noopener">REST Dissertation</a> — Roy Fielding关于网络架构的论文“建筑风格和基于网络的软件架构设计”中的REST章节。</p><p><a href="https://tools.ietf.org/html/rfc7231" target="_blank" rel="noopener">RFC 7231</a> — 定义HTTP / 1.1语义的规范，并被视为权威资料。</p><p><a href="http://www.amazon.com/REST-Practice-Hypermedia-Systems-Architecture/dp/0596805829/" target="_blank" rel="noopener">REST in Practice</a> — REST的基础知识。</p><h2 id="4">4. 关于指南</h2>]]></content>
+    <content type="html"><![CDATA[<h2 id="1">1.摘要</h2><p>Microsoft REST API指南作为一种设计原则，鼓励应用程序开发人员通过RESTful HTTP接口为他们提供可访问的资源。为了在遵循Microsoft REST API准则的平台上为开发人员提供最顺畅的体验，REST API应遵循一致的设计准则，以便使用它们变得简单直观。</p><p>本文档建立了Microsoft REST API应遵循的准则，以便一致地开发RESTful接口。</p><h2 id="2">2.目录</h2><ul><li><p><a href="#0">Microsoft REST API准则工作组</a></p></li><li><p><a href="#1">1.摘要</a></p></li><li><p><a href="#2">2.目录</a></p></li><li><p><a href="#3">3.介绍</a></p><ul><li><a href="#3.1">3.1推荐阅读</a></li></ul></li><li><a href="#4">4.关于指南</a><ul><li><a href="#4.1">4.1适用指南</a></li></ul></li></ul><h2 id="3">3.介绍</h2><p>开发人员通过HTTP接口访问大多数Microsoft Cloud Platform资源。尽管每个服务通常都提供特定于语言的框架来包装其API，但它们的所有操作最终都归结为HTTP请求。Microsoft必须支持广泛的客户端和服务，并且不能依赖于可用于每个开发环境的丰富框架。因此，这些指南的目标是确保具有基本HTTP支持的任何客户端可以更容易，统一地使用Microsoft REST API。</p><p>为了给开发人员提供最顺畅的体验，让这些API遵循一致的设计指南非常重要，这样才能使用它们变得简单直观。本文档建立了Microsoft REST API开发人员为了统一地开发此类API而应遵循的准则。</p><p>统一的好处是日积月累的: 统一之后允许团队利用通用代码，模式，文档和设计决策。</p><p>这些准则旨在实现以下目标:</p><ul><li>为Microsoft中的所有API端点定义统一的做法和模式。</li><li>尽可能地遵守业内普遍接受的REST / HTTP最佳实践。</li><li>通过REST接口轻松访问所有应用程序开发人员的Microsoft服务。</li><li>允许服务开发人员利用其他服务的先前工作来实现，测试和记录一致定义的REST端点。</li><li>允许合作伙伴（例如，非Microsoft实体）将这些准则用于他们自己的REST端点设计。</li></ul><p><strong>注意：本指南旨在与符合REST架构风格的构建服务保持一致，但它们不解决或要求构建遵循REST约束的服务。本文档中使用的术语“REST”是指本着REST的精神而不是本书坚持REST的服务。</strong></p><h3 id="3.1">3.1. 推荐阅读</h3><p>建议理解REST架构风格背后的理念，以开发良好的基于HTTP的服务。</p><p>如果您是RESTful设计的新手，这里有一些很好的资源:</p><p><a href="[https://zh.wikipedia.org/wiki/%E8%A1%A8%E7%8E%B0%E5%B1%82%E7%8A%B6%E6%80%81%E8%BD%AC%E6%8D%A2](https://zh.wikipedia.org/wiki/表现层状态转换">REST on Wikipedia</a>) — REST的通俗定义和核心思想概述。</p><p><a href="https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm" target="_blank" rel="noopener">REST Dissertation</a> — Roy Fielding关于网络架构的论文“建筑风格和基于网络的软件架构设计”中的REST章节。</p><p><a href="https://tools.ietf.org/html/rfc7231" target="_blank" rel="noopener">RFC 7231</a> — 定义HTTP / 1.1语义的规范，并被视为权威资料。</p><p><a href="http://www.amazon.com/REST-Practice-Hypermedia-Systems-Architecture/dp/0596805829/" target="_blank" rel="noopener">REST in Practice</a> — REST的基础知识。</p><h2 id="4">4. 关于指南</h2><h3 id="4.1">4.1. 使用指南</h3>]]></content>
     
     <summary type="html">
     
@@ -168,29 +214,6 @@
     
     
       <category term="Python" scheme="http://liuwenfeng.xyz/tags/Python/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>hello, 2019</title>
-    <link href="http://liuwenfeng.xyz/2019/01/01/hello-2019/"/>
-    <id>http://liuwenfeng.xyz/2019/01/01/hello-2019/</id>
-    <published>2019-01-01T09:16:28.000Z</published>
-    <updated>2019-04-01T07:39:15.167Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="TODO"><a href="#TODO" class="headerlink" title="TODO"></a>TODO</h3><h4 id="书"><a href="#书" class="headerlink" title="书"></a>书</h4><ul><li style="list-style: none"><input type="checkbox" checked> <a href="https://book.douban.com/subject/24335672/" target="_blank" rel="noopener">淘宝技术这十年</a></li><li style="list-style: none"><input type="checkbox" checked> <a href="https://book.douban.com/subject/25863515/" target="_blank" rel="noopener">图解HTTP</a></li><li style="list-style: none"><input type="checkbox" checked> <a href="https://book.douban.com/subject/26337545/" target="_blank" rel="noopener">Go语言圣经</a></li><li style="list-style: none"><input type="checkbox"> <a href="https://book.douban.com/subject/30357170/" target="_blank" rel="noopener">我的第一本算法书</a></li><li style="list-style: none"><input type="checkbox"> <a href="https://book.douban.com/subject/23008813/" target="_blank" rel="noopener">高性能MySQL</a></li><li style="list-style: none"><input type="checkbox"> <a href="https://book.douban.com/subject/25856314/" target="_blank" rel="noopener">Web性能权威指南 </a></li><li style="list-style: none"><input type="checkbox"> <a href="https://book.douban.com/subject/3004255/" target="_blank" rel="noopener">编程之美</a></li><li style="list-style: none"><input type="checkbox"> <a href="https://book.douban.com/subject/1181690/" target="_blank" rel="noopener">傅雷家书</a></li><li style="list-style: none"><input type="checkbox"> <a href="https://book.douban.com/subject/1007433/" target="_blank" rel="noopener">红与黑</a></li><li style="list-style: none"><input type="checkbox"> <a href="https://book.douban.com/subject/3995526/" target="_blank" rel="noopener">目送</a></li><li style="list-style: none"><input type="checkbox"> <a href="https://book.douban.com/subject/20427187/" target="_blank" rel="noopener">看见</a></li></ul><h4 id="课"><a href="#课" class="headerlink" title="课"></a>课</h4><ul><li style="list-style: none"><input type="checkbox"> <a href="https://pdos.csail.mit.edu/6.824/schedule.html" target="_blank" rel="noopener">MIT 6.824</a></li></ul><h4 id="玩"><a href="#玩" class="headerlink" title="玩"></a>玩</h4><ul><li style="list-style: none"><input type="checkbox"> Ti9 上海</li><li style="list-style: none"><input type="checkbox"> 日本</li></ul><h4 id="乐"><a href="#乐" class="headerlink" title="乐"></a>乐</h4><ul><li style="list-style: none"><input type="checkbox" checked> <a href="https://movie.douban.com/subject/30331149/" target="_blank" rel="noopener">白蛇：缘起</a></li><li style="list-style: none"><input type="checkbox" checked> <a href="https://movie.douban.com/subject/4864908/" target="_blank" rel="noopener">影</a></li><li style="list-style: none"><input type="checkbox" checked> <a href="https://movie.douban.com/subject/27140017/" target="_blank" rel="noopener">非自然死亡</a></li><li style="list-style: none"><input type="checkbox" checked> <a href="https://movie.douban.com/subject/1652592/" target="_blank" rel="noopener">阿丽塔：战斗天使</a></li><li style="list-style: none"><input type="checkbox" checked> <a href="https://movie.douban.com/subject/26266893/" target="_blank" rel="noopener">流浪地球</a></li><li style="list-style: none"><input type="checkbox" checked> <a href="https://movie.douban.com/subject/1972698/" target="_blank" rel="noopener">守望者</a></li><li style="list-style: none"><input type="checkbox" checked> <a href="https://movie.douban.com/subject/26947951/" target="_blank" rel="noopener">王国</a></li><li style="list-style: none"><input type="checkbox" checked> <a href="https://movie.douban.com/subject/30163509/" target="_blank" rel="noopener">飞驰人生</a></li><li style="list-style: none"><input type="checkbox" checked> <a href="https://movie.douban.com/subject/25986662/" target="_blank" rel="noopener">疯狂的外星人</a></li><li style="list-style: none"><input type="checkbox" checked> <a href="https://movie.douban.com/subject/27197086/" target="_blank" rel="noopener">国家破产之日</a></li><li style="list-style: none"><input type="checkbox" checked> <a href="https://movie.douban.com/subject/27060077/" target="_blank" rel="noopener">绿皮书</a></li><li style="list-style: none"><input type="checkbox" checked> <a href="https://www.douban.com/search?q=%E6%97%A0%E8%80%BB%E4%B9%8B%E5%BE%92%28%E7%BE%8E%E7%89%88%29" target="_blank" rel="noopener">无耻之徒(美版)</a></li><li style="list-style: none"><input type="checkbox" checked> <a href="https://movie.douban.com/subject/30164448/" target="_blank" rel="noopener">海市蜃楼</a></li><li style="list-style: none"><input type="checkbox"> <a href="https://movie.douban.com/subject/26584183/" target="_blank" rel="noopener">权力的游戏 第八季</a></li><li style="list-style: none"><input type="checkbox"> <a href="https://movie.douban.com/subject/26100958/" target="_blank" rel="noopener">复仇者联盟4：终局之战</a></li><li style="list-style: none"><input type="checkbox"> <a href="https://movie.douban.com/subject/1950330/" target="_blank" rel="noopener">罗马</a></li></ul>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h3 id=&quot;TODO&quot;&gt;&lt;a href=&quot;#TODO&quot; class=&quot;headerlink&quot; title=&quot;TODO&quot;&gt;&lt;/a&gt;TODO&lt;/h3&gt;&lt;h4 id=&quot;书&quot;&gt;&lt;a href=&quot;#书&quot; class=&quot;headerlink&quot; title=&quot;书&quot;&gt;&lt;/a&gt;书&lt;/h4&gt;&lt;u
-      
-    
-    </summary>
-    
-      <category term="小目标" scheme="http://liuwenfeng.xyz/categories/%E5%B0%8F%E7%9B%AE%E6%A0%87/"/>
-    
     
   </entry>
   
